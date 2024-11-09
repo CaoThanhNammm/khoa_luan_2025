@@ -28,11 +28,7 @@ def read_chunks(data_path, chunk_size = 700, chunk_overlap = 140):
 def create_embedding(chunks, collection_name, pho_bert_large, pho_bert_base_v2, model_512, tokenizer1, tokenizer2, model_splade_doc, tokenizer_splade_doc, model_late_interaction, tokenizer_late_interaction, client):
     vncorenlp = general.load_vncorenlp()
 
-    points_1024 = []
-    points_768 = []
-    points_512 = []
-    points_sparse_vector = []
-    points_late_interaction = []
+    points = []
     id = 1
 
     for chunk in range(len(chunks)):
@@ -56,65 +52,26 @@ def create_embedding(chunks, collection_name, pho_bert_large, pho_bert_base_v2, 
 
             print(text_pre_processing)
 
-            points_1024.append(
+            points.append(
                 PointStruct(
                     id=id,
                     payload={"text": content, "metadata": metadata},
                     vector = {
-                        'default': embedded_text_1024
-                    }
-                )
-            )
-            id += 1
-            points_768.append(
-                PointStruct(
-                    id=id,
-                    payload={"text": content, "metadata": metadata},
-                    vector={
-                        'matryoshka-768dim': embedded_text_768
-                    }
-                )
-            )
-            id += 1
-            points_512.append(
-                PointStruct(
-                    id=id,
-                    payload={"text": content, "metadata": metadata},
-                    vector={
-                        'matryoshka-512dim': embedded_text_512
-                    }
-                )
-            )
-            id += 1
-            points_sparse_vector.append(
-                PointStruct(
-                    id=id,
-                    payload={"text": content, "metadata": metadata},
-                    vector={
-                        'keyword': models.SparseVector(indices=indices, values=values)
-                    }
-                )
-            )
-            id += 1
-            points_late_interaction.append(
-                PointStruct(
-                    id=id,
-                    payload={"text": content, "metadata": metadata},
-                    vector={
+                        'matryoshka-1024dim': embedded_text_1024,
+                        'matryoshka-768dim': embedded_text_768,
+                        'matryoshka-512dim': embedded_text_512,
+                        'sparse': models.SparseVector(indices=indices, values=values),
                         'late_interaction': embedded_late_interaction
                     }
                 )
             )
+
             id += 1
         except Exception as e:
             print(e)
             continue
 
-    client.upsert(collection_name, points_1024)
-    client.upsert(collection_name, points_768)
-    client.upsert(collection_name, points_512)
-    client.upsert(collection_name, points_sparse_vector)
-    client.upsert(collection_name, points_late_interaction)
+    client.upsert(collection_name, points)
 
     print("create embedding success")
 

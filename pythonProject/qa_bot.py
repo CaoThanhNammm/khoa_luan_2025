@@ -1,54 +1,61 @@
 import os
 from dotenv import load_dotenv
 from qdrant_client import models
+import requests
 
 load_dotenv()
 from langchain_core.prompts import PromptTemplate
 import general
-#
 
-def matryoshka_prefetch(text_embedded_1024, text_embedded_768, text_embedded_512):
-    return models.Prefetch(
-        prefetch=[
-            models.Prefetch(
-                prefetch=[
-                    models.Prefetch(
-                        query=text_embedded_512,
-                        using="matryoshka-512dim",
-                        limit=100,
-                    ),
-                ],
-                query=text_embedded_768,
-                using="matryoshka-768dim",
-                limit=50,
-            )
-        ],
-        query=text_embedded_1024,
-        using="default",
-        limit=25,
-    )
 
 def query_from_db(client, collection_name, text_embedded_1024, text_embedded_768, text_embedded_512, embedded_late_interaction):
     return client.query_points(
         collection_name=f"{collection_name}",
-        prefetch=[
-            models.Prefetch(
-                prefetch=[
-                    models.Prefetch(
-                        query=text_embedded_768,
-                        using="matryoshka-768dim",
-                        limit=100,
-                    )
-                ],
-                query=text_embedded_1024,
-                using="default",
-                limit=25,
+        prefetch=models.Prefetch(
+            prefetch=models.Prefetch(
+                prefetch=models.Prefetch(
+                    query=text_embedded_512,
+                    using="matryoshka-512dim",
+                    limit=100,
+                ),
+                query=text_embedded_768,
+                using="matryoshka-768dim",
+                limit=50,
             ),
-        ],
-        query=models.FusionQuery(
-            fusion=models.Fusion.RRF,
+            query=text_embedded_1024,
+            using="matryoshka-1024dim",
+            limit=25,
         ),
-    )
+        query=embedded_late_interaction,
+        using="late_interaction",
+        limit=10,
+    ).points
+
+def re_ranking(query, query_text_json):
+    invoke_url = "https://ai.api.nvidia.com/v1/retrieval/nvidia/nv-rerankqa-mistral-4b-v3/reranking"
+
+    headers = {
+        "Authorization": "Bearer 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",
+        "Accept": "application/json",
+    }
+
+    payload = {
+        "model": "nvidia/nv-rerankqa-mistral-4b-v3",
+        "query": {
+            "text": query
+        },
+        "passages": query_text_json
+    }
+
+    # re-use connections
+    session = requests.Session()
+
+    response = session.post(invoke_url, headers=headers, json=payload)
+
+    response.raise_for_status()
+    response_body = response.json()
+    return response_body
+
 
 collection_name = os.getenv("name_collection")
 model_name = os.getenv("model")
@@ -78,7 +85,7 @@ model_query, tokenizer_query = general.load_model_splade(model_splade_query_name
 client = general.load_db(url)
 
 # 5. truy vấn database
-query  = "hãy nói cho tôi về việc phân loại rag"
+query  = "các thành phần trong cấu trúc tổng quản của RAG là gì?"
 
 # 6. Tiền xử lý
 vncorenlp = general.load_vncorenlp()
@@ -96,18 +103,25 @@ sorted_tokens_doc = general.extract_and_map_sparse_vector(doc_vec, tokenizer_que
 indices = tokenizer_query.convert_tokens_to_ids(sorted_tokens_doc)
 values = list(sorted_tokens_doc.values())
 
+# 8. embedding late interaction query
 embedded_late_interaction = general.get_embedding_late_interaction(model_late_interaction, tokenizer_late_interaction, text_pre_processed)
 
+# 9. query từ database
 print("query:", text_pre_processed)
 
 results = query_from_db(client, collection_name, text_embedded_1024, text_embedded_768, text_embedded_512, embedded_late_interaction)
 print(results)
 
-for result in results.points:
-    print(result.payload["text"], "\n---------------------------------------------------------------------------------------------")
+json_query_text = []
+
+for result in results:
+    json_query_text.append({"text": result.payload["text"]})
+    print(result.payload["text"], "\n-----------------------------------------------------------------------------------------------------------")
 
 
-
+# 10. re-ranking
+re_ranking_query_text = re_ranking(query, json_query_text)
+print(re_ranking_query_text)
 
 
 

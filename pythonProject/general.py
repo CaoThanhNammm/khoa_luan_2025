@@ -59,8 +59,7 @@ def create_collection(client, collection_name, size, distance):
     client.create_collection(
         collection_name=collection_name,
         vectors_config={
-            # Định nghĩa vector mặc định
-            'default': {
+            'matryoshka-1024dim': {
                 'size': size,
                 'distance': distance,
                 'datatype': models.Datatype.FLOAT32,
@@ -90,11 +89,7 @@ def create_collection(client, collection_name, size, distance):
             ),
         ),
         sparse_vectors_config={
-            "keyword": models.SparseVectorParams(
-                index=models.SparseIndexParams(
-                    on_disk=False,
-                )
-            )
+            "sparse": models.SparseVectorParams()
         },
         hnsw_config=hnsw_config  # Thêm cấu hình HNSW
     )

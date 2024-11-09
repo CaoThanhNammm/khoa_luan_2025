@@ -1,16 +1,45 @@
+# from langchain_nvidia_ai_endpoints import NVIDIARerank
+# from langchain.retrievers.contextual_compression import ContextualCompressionRetriever
+#
+# reranker = NVIDIARerank()
+# compression_retriever = ContextualCompressionRetriever(
+#     base_compressor=reranker, base_retriever=retriever
+# )
+#
+# reranked_chunks = compression_retriever.compress_documents(query)
 
-from transformers import AutoTokenizer, AutoModel
+import requests
 
-# Load the tokenizer and model from HuggingFace
-tokenizer = AutoTokenizer.from_pretrained('colbert-ir/colbertv2.0')
-model = AutoModel.from_pretrained('colbert-ir/colbertv2.0')
+invoke_url = "https://ai.api.nvidia.com/v1/retrieval/nvidia/nv-rerankqa-mistral-4b-v3/reranking"
 
-# Example query and document
-query = """AI VIET NAM – COURSE 2023 Foundation of Prompt Engineering Ngày 19 tháng 3 năm 2024 Phần I: Tổng quan vềRAG Phần II: Retrieval Augmented Generation (RAG) Trong bối cảnh các mô hình ngôn ngữlớn (LLM) phát triển mạnh mẽ, sựxuất hiện của các mô hình GPT (OpenAI), LLama (Meta), Gemini (Google) đã thểhiện khảnăng ấn tượng trong việc sinh ngôn ngữ, thực hiện tác tác vụvới ngôn ngữtựnhiên. Cho dù vậy, các mô hình ngôn ngữlớn vẫn cho thấy còn nhiều điểm yếu như dữliệu thiếu tính cập nhật, thiếu dữliệu chuyên môn cho các lĩnh vực cụthể hay sinh ngôn ngữthiếu chính xác (hay được biết đến với thuật ngữ"hallucination")."""
+headers = {
+    "Authorization": "Bearer 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",
+    "Accept": "application/json",
+}
 
-query_tokens = tokenizer(query, return_tensors='pt', truncation=True, padding=True)
+payload = {
+  "model": "nvidia/nv-rerankqa-mistral-4b-v3",
+  "query": {
+    "text": "What is the GPU memory bandwidth of H100 SXM?"
+  },
+  "passages": [
+    {
+      "text": "The Hopper GPU is paired with the Grace CPU using NVIDIA's ultra-fast chip-to-chip interconnect, delivering 900GB/s of bandwidth, 7X faster than PCIe Gen5. This innovative design will deliver up to 30X higher aggregate system memory bandwidth to the GPU compared to today's fastest servers and up to 10X higher performance for applications running terabytes of data."
+    },
+    {
+      "text": "A100 provides up to 20X higher performance over the prior generation and can be partitioned into seven GPU instances to dynamically adjust to shifting demands. The A100 80GB debuts the world's fastest memory bandwidth at over 2 terabytes per second (TB/s) to run the largest models and datasets."
+    },
+    {
+      "text": "Accelerated servers with H100 deliver the compute power—along with 3 terabytes per second (TB/s) of memory bandwidth per GPU and scalability with NVLink and NVSwitch™."
+    }
+  ]
+}
 
-query_embedding = model(**query_tokens).last_hidden_state.detach().numpy()[0]
+# re-use connections
+session = requests.Session()
 
-print(query_embedding)
-print(len(query_embedding))
+response = session.post(invoke_url, headers=headers, json=payload)
+
+response.raise_for_status()
+response_body = response.json()
+print(response_body)
