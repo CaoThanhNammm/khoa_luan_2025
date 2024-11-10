@@ -1,12 +1,20 @@
+from dotenv import load_dotenv
+import requests
+load_dotenv()
+from langchain_core.prompts import PromptTemplate, ChatPromptTemplate
+import general
+import google.generativeai as genai
+from qdrant_client import models
 import os
 from dotenv import load_dotenv
-from qdrant_client import models
-import requests
-
 load_dotenv()
-from langchain_core.prompts import PromptTemplate
-import general
 
+
+def load_model(model):
+    genai.configure(api_key=os.getenv("API_KEY"))
+    model = genai.GenerativeModel(model)
+    print("load model success")
+    return model
 
 def query_from_db(client, collection_name, text_embedded_1024, text_embedded_768, text_embedded_512, embedded_late_interaction):
     return client.query_points(
@@ -35,7 +43,7 @@ def re_ranking(query, query_text_json):
     invoke_url = "https://ai.api.nvidia.com/v1/retrieval/nvidia/nv-rerankqa-mistral-4b-v3/reranking"
 
     headers = {
-        "Authorization": "Bearer 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",
+        "Authorization": f"Bearer {os.getenv("API_KEY_RERANKING")}",
         "Accept": "application/json",
     }
 
@@ -56,6 +64,23 @@ def re_ranking(query, query_text_json):
     response_body = response.json()
     return response_body
 
+def rewrite_query(model, query):
+    system_rewrite = """
+    ("system", "Bạn là một trợ lý hữu ích, tạo ra nhiều truy vấn tìm kiếm dựa trên một truy vấn đầu vào duy nhất.
+    Thực hiện mở rộng truy vấn. Nếu có nhiều cách phổ biến để diễn đạt một câu hỏi của người dùng hoặc 
+    có các từ đồng nghĩa phổ biến cho các từ khóa trong câu hỏi, hãy đảm bảo trả về nhiều phiên bản của truy vấn với các cách diễn đạt khác nhau.
+    Nếu có các từ viết tắt hoặc từ bạn không quen thuộc, đừng cố gắng diễn đạt lại chúng.
+    Trả về 3 phiên bản khác nhau của câu hỏi.")
+    
+    ("human", {question})
+    """
+
+    prompt = PromptTemplate(input_variables=["question"], template=system_rewrite)
+    formatted_prompt = prompt.format(question=query)
+
+    response = model.generate_content(formatted_prompt)
+
+    return response.text
 
 collection_name = os.getenv("name_collection")
 model_name = os.getenv("model")
@@ -70,7 +95,7 @@ model_late_interaction_name = os.getenv("model_late_interaction")
 url = os.getenv("url")
 
 # 1. tải model
-model = general.load_model(model_name)
+model = load_model(model_name)
 
 # 2. tải model_embedding
 model_1024, tokenizer1 = general.load_model_embedding(model_embedding_1024_name)
@@ -85,7 +110,7 @@ model_query, tokenizer_query = general.load_model_splade(model_splade_query_name
 client = general.load_db(url)
 
 # 5. truy vấn database
-query  = "các thành phần trong cấu trúc tổng quản của RAG là gì?"
+query  = "Thực phẩm bao gói sẵn là gi?"
 
 # 6. Tiền xử lý
 vncorenlp = general.load_vncorenlp()
@@ -113,7 +138,7 @@ results = query_from_db(client, collection_name, text_embedded_1024, text_embedd
 print(results)
 
 json_query_text = []
-
+print("\n----------------------------------------------------------------------------------------------------------------------------------------------------------")
 for result in results:
     json_query_text.append({"text": result.payload["text"]})
     print(result.payload["text"], "\n-----------------------------------------------------------------------------------------------------------")
@@ -122,42 +147,3 @@ for result in results:
 # 10. re-ranking
 re_ranking_query_text = re_ranking(query, json_query_text)
 print(re_ranking_query_text)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# scored_point_1  = query_from_db(client, name_collection, model_embedding, query)[0]
-# scored_point_2  = query_from_db(client, name_collection, model_embedding, query)[1]
-# scored_point_3  = query_from_db(client, name_collection, model_embedding, query)[2]
-#
-# page_content_1 = scored_point_1.payload['page_content']
-# page_content_2 = scored_point_2.payload['page_content']
-# page_content_3 = scored_point_3.payload['page_content']
-#
-# result_from_db = query + ", " + page_content_1 + ", " + page_content_2 + ", " + page_content_3
-# print(query_from_db(client, name_collection, model_embedding, query))
-#
-# result_from_db = " ".join(result_from_db.split())
-#
-# template = """Bạn là một con chatbot ai dùng để trả lời câu hỏi, hãy trả lời chính xác. Câu hỏi của tôi là: {text}. Nếu không biết thì hãy nói không biết"""
-# prompt = PromptTemplate(input_variables=["text"], template=template)
-# formatted_prompt = prompt.format(text="cho toi 1 vai cau tho ve bien")
-#
-# response = model.generate_content(formatted_prompt)
-# print(response.text)

@@ -1,24 +1,13 @@
-import google.generativeai as genai
 from sentence_transformers import SentenceTransformer
-from transformers import AutoTokenizer, AutoModel
+from transformers import AutoModel
 from qdrant_client import QdrantClient, models
 import torch
-from langchain_community.embeddings import HuggingFaceEmbeddings
 from transformers import AutoModelForMaskedLM, AutoTokenizer
-from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_qdrant import Qdrant
 import py_vncorenlp
-import os
 from dotenv import load_dotenv
 load_dotenv()
 
 import re
-
-def load_model(model):
-    genai.configure(api_key=os.getenv("API_KEY"))
-    model = genai.GenerativeModel(model)
-    print("load model success")
-    return model
 
 def load_vncorenlp():
     return py_vncorenlp.VnCoreNLP(annotators=["wseg"], save_dir=r'C:\Users\Nam\Desktop\vncorenlp')

@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 from qdrant_client.models import PointStruct
 load_dotenv()
 import general
-import random
 
 # đọc từng đoạn một của tất cả pdf
 def read_chunks(data_path, chunk_size = 700, chunk_overlap = 140):
@@ -15,10 +14,10 @@ def read_chunks(data_path, chunk_size = 700, chunk_overlap = 140):
     documents = loader.load()
 
     # Chỉ lấy từ trang 4 trở đi vì trang đầu thường là bìa sách và mục lục
-    # documents = documents[4:]
+    documents = documents[4:len(documents)-2]
 
     # Sử dụng TextSplitter để chia nhỏ văn bản
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
+    text_splitter = SpacyTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
     chunks = text_splitter.split_documents(documents)
 
     print("Read chunk success")
@@ -27,7 +26,6 @@ def read_chunks(data_path, chunk_size = 700, chunk_overlap = 140):
 # tạo embedding với len(embedding) = 768
 def create_embedding(chunks, collection_name, pho_bert_large, pho_bert_base_v2, model_512, tokenizer1, tokenizer2, model_splade_doc, tokenizer_splade_doc, model_late_interaction, tokenizer_late_interaction, client):
     vncorenlp = general.load_vncorenlp()
-
     points = []
     id = 1
 
@@ -91,8 +89,6 @@ distance = os.getenv("distance")
 
 model_splade_doc_name = os.getenv("model_splade_doc")
 
-# 1. tải model
-model = general.load_model(model_name)
 
 # 2. load model và model_embedding để embedding
 model_1024, tokenizer1 = general.load_model_embedding(model_embedding_1024_name)
