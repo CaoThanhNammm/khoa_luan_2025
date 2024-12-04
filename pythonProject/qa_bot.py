@@ -2,6 +2,8 @@ from dotenv import load_dotenv
 import requests
 load_dotenv()
 from langchain_core.prompts import PromptTemplate, ChatPromptTemplate
+from langchain_nvidia_ai_endpoints import NVIDIARerank
+from langchain_core.documents import Document
 import general
 import google.generativeai as genai
 from qdrant_client import models
@@ -40,29 +42,17 @@ def query_from_db(client, collection_name, text_embedded_1024, text_embedded_768
     ).points
 
 def re_ranking(query, query_text_json):
-    invoke_url = "https://ai.api.nvidia.com/v1/retrieval/nvidia/nv-rerankqa-mistral-4b-v3/reranking"
+    client = NVIDIARerank(
+        model="nvidia/nv-rerankqa-mistral-4b-v3",
+        api_key=os.getenv("API_KEY_RERANKING"),
+    )
 
-    headers = {
-        "Authorization": f"Bearer {os.getenv("API_KEY_RERANKING")}",
-        "Accept": "application/json",
-    }
+    response = client.compress_documents(
+        query=query,
+        documents=[Document(page_content=passage) for passage in json_query_text]
+    )
 
-    payload = {
-        "model": "nvidia/nv-rerankqa-mistral-4b-v3",
-        "query": {
-            "text": query
-        },
-        "passages": query_text_json
-    }
-
-    # re-use connections
-    session = requests.Session()
-
-    response = session.post(invoke_url, headers=headers, json=payload)
-
-    response.raise_for_status()
-    response_body = response.json()
-    return response_body
+    return response
 
 def rewrite_query(model, query):
     system_rewrite = """
@@ -110,7 +100,9 @@ model_query, tokenizer_query = general.load_model_splade(model_splade_query_name
 client = general.load_db(url)
 
 # 5. truy vấn database
-query  = "Thực phẩm bao gói sẵn là gi?"
+query  = """Làm các thủ tục đăng ký doanh nghiệp hoặc đăng ký hộ kinh doanh (trừ trường hợp
+không phải đăng ký) 
+"""
 
 # 6. Tiền xử lý
 vncorenlp = general.load_vncorenlp()
@@ -140,10 +132,15 @@ print(results)
 json_query_text = []
 print("\n----------------------------------------------------------------------------------------------------------------------------------------------------------")
 for result in results:
-    json_query_text.append({"text": result.payload["text"]})
+    json_query_text.append(result.payload["text"])
     print(result.payload["text"], "\n-----------------------------------------------------------------------------------------------------------")
 
 
+print("START RE RANKING")
 # 10. re-ranking
 re_ranking_query_text = re_ranking(query, json_query_text)
-print(re_ranking_query_text)
+for i in range(len(re_ranking_query_text)):
+    logit = re_ranking_query_text[i].metadata['relevance_score']
+    text = re_ranking_query_text[i].page_content
+
+    print(f"{i: } ---- {logit}: {text}\n-----------------------------------------------------------------------------------")
