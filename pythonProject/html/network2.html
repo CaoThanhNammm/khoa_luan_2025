@@ -1,0 +1,163 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: auto;
+                 height: 700px;
+                 background-color: #eeeeee;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#97c2fc", "id": "Ph\u1ea7n 1: NLU - \u0110\u1ecbnh h\u01b0\u1edbng tr\u01b0\u1eddng \u0111\u1ea1i h\u1ecdc nghi\u00ean c\u1ee9u", "label": "Ph\u1ea7n 1: NLU - \u0110\u1ecbnh h\u01b0\u1edbng tr\u01b0\u1eddng \u0111\u1ea1i h\u1ecdc nghi\u00ean c\u1ee9u", "shape": "dot"}, {"color": "#97c2fc", "id": "7", "label": "7", "shape": "dot"}, {"color": "#97c2fc", "id": "Qu\u00e1 tr\u00ecnh h\u00ecnh th\u00e0nh v\u00e0 ph\u00e1t tri\u1ec3n", "label": "Qu\u00e1 tr\u00ecnh h\u00ecnh th\u00e0nh v\u00e0 ph\u00e1t tri\u1ec3n", "shape": "dot"}, {"color": "#97c2fc", "id": "8", "label": "8", "shape": "dot"}, {"color": "#97c2fc", "id": "S\u1ee9 m\u1ea1ng", "label": "S\u1ee9 m\u1ea1ng", "shape": "dot"}, {"color": "#97c2fc", "id": "T\u1ea7m nh\u00ecn", "label": "T\u1ea7m nh\u00ecn", "shape": "dot"}, {"color": "#97c2fc", "id": "Gi\u00e1 tr\u1ecb c\u1ed1t l\u00f5i", "label": "Gi\u00e1 tr\u1ecb c\u1ed1t l\u00f5i", "shape": "dot"}, {"color": "#97c2fc", "id": "C\u00e1c \u0111\u01a1n v\u1ecb", "label": "C\u00e1c \u0111\u01a1n v\u1ecb", "shape": "dot"}, {"color": "#97c2fc", "id": "tr\u01b0\u1eddng", "label": "tr\u01b0\u1eddng", "shape": "dot"}, {"color": "#97c2fc", "id": "C\u00e1c khoa", "label": "C\u00e1c khoa", "shape": "dot"}, {"color": "#97c2fc", "id": "", "label": "", "shape": "dot"}, {"color": "#97c2fc", "id": "Tu\u1ea7n sinh ho\u1ea1t", "label": "Tu\u1ea7n sinh ho\u1ea1t", "shape": "dot"}, {"color": "#97c2fc", "id": "Ho\u1ea1t \u0111\u1ed9ng phong tr\u00e0o", "label": "Ho\u1ea1t \u0111\u1ed9ng phong tr\u00e0o", "shape": "dot"}, {"color": "#97c2fc", "id": "Ho\u1ea1t \u0111\u1ed9ng phong tr\u00e0o sinh vi\u00ean", "label": "Ho\u1ea1t \u0111\u1ed9ng phong tr\u00e0o sinh vi\u00ean", "shape": "dot"}, {"color": "#97c2fc", "id": "None", "label": "None", "shape": "dot"}, {"color": "#97c2fc", "id": "C\u00e2u l\u1ea1c b\u1ed9 (CLB) - \u0110\u1ed9i, Nh\u00f3m", "label": "C\u00e2u l\u1ea1c b\u1ed9 (CLB) - \u0110\u1ed9i, Nh\u00f3m", "shape": "dot"}, {"color": "#97c2fc", "id": "C\u01a1 s\u1edf \u0111\u00e0o t\u1ea1o", "label": "C\u01a1 s\u1edf \u0111\u00e0o t\u1ea1o", "shape": "dot"}, {"color": "#97c2fc", "id": "Quy ch\u1ebf sinh vi\u00ean", "label": "Quy ch\u1ebf sinh vi\u00ean", "shape": "dot"}, {"color": "#97c2fc", "id": "23", "label": "23", "shape": "dot"}, {"color": "#97c2fc", "id": "Quy ch\u1ebf h\u1ecdc v\u1ee5", "label": "Quy ch\u1ebf h\u1ecdc v\u1ee5", "shape": "dot"}, {"color": "#97c2fc", "id": "24", "label": "24", "shape": "dot"}, {"color": "#97c2fc", "id": "Quy \u0111\u1ecbnh v\u1ec1 vi\u1ec7c \u0111\u00e0o t\u1ea1o tr\u1ef1c tuy\u1ebfn", "label": "Quy \u0111\u1ecbnh v\u1ec1 vi\u1ec7c \u0111\u00e0o t\u1ea1o tr\u1ef1c tuy\u1ebfn", "shape": "dot"}, {"color": "#97c2fc", "id": "27", "label": "27", "shape": "dot"}, {"color": "#97c2fc", "id": "Quy \u0111\u1ecbnh khen th\u01b0\u1edfng, k\u1ef7 lu\u1eadt sinh vi\u00ean", "label": "Quy \u0111\u1ecbnh khen th\u01b0\u1edfng, k\u1ef7 lu\u1eadt sinh vi\u00ean", "shape": "dot"}, {"color": "#97c2fc", "id": "42", "label": "42", "shape": "dot"}, {"color": "#97c2fc", "id": "Quy ch\u1ebf \u0111\u00e1nh gi\u00e1 k\u1ebft qu\u1ea3 r\u00e8n luy\u1ec7n", "label": "Quy ch\u1ebf \u0111\u00e1nh gi\u00e1 k\u1ebft qu\u1ea3 r\u00e8n luy\u1ec7n", "shape": "dot"}, {"color": "#97c2fc", "id": "45", "label": "45", "shape": "dot"}, {"color": "#97c2fc", "id": "Quy t\u1eafc \u1ee9ng x\u1eed v\u0103n h\u00f3a", "label": "Quy t\u1eafc \u1ee9ng x\u1eed v\u0103n h\u00f3a", "shape": "dot"}, {"color": "#97c2fc", "id": "54", "label": "54", "shape": "dot"}, {"color": "#97c2fc", "id": "C\u1ed1 v\u1ea5n h\u1ecdc t\u1eadp", "label": "C\u1ed1 v\u1ea5n h\u1ecdc t\u1eadp", "shape": "dot"}, {"color": "#97c2fc", "id": "55", "label": "55", "shape": "dot"}, {"color": "#97c2fc", "id": "Danh hi\u1ec7u sinh vi\u00ean 5 t\u1ed1t", "label": "Danh hi\u1ec7u sinh vi\u00ean 5 t\u1ed1t", "shape": "dot"}, {"color": "#97c2fc", "id": "56", "label": "56", "shape": "dot"}, {"color": "#97c2fc", "id": "Danh hi\u1ec7u sinh vi\u00ean ti\u00eau bi\u1ec3u", "label": "Danh hi\u1ec7u sinh vi\u00ean ti\u00eau bi\u1ec3u", "shape": "dot"}, {"color": "#97c2fc", "id": "58", "label": "58", "shape": "dot"}, {"color": "#97c2fc", "id": "Ph\u1ea7n 3: H\u1ed6 TR\u1ee2 V\u00c0 D\u1ecaCH V\u1ee4", "label": "Ph\u1ea7n 3: H\u1ed6 TR\u1ee2 V\u00c0 D\u1ecaCH V\u1ee4", "shape": "dot"}, {"color": "#97c2fc", "id": "59", "label": "59", "shape": "dot"}, {"color": "#97c2fc", "id": "Quy \u0111\u1ecbnh ph\u00e2n c\u1ea5p gi\u1ea3i", "label": "Quy \u0111\u1ecbnh ph\u00e2n c\u1ea5p gi\u1ea3i", "shape": "dot"}, {"color": "#97c2fc", "id": "sinh vi\u00ean", "label": "sinh vi\u00ean", "shape": "dot"}, {"color": "#97c2fc", "id": "quy\u1ebft", "label": "quy\u1ebft", "shape": "dot"}, {"color": "#97c2fc", "id": "h\u1ecdc b\u1ed5ng", "label": "h\u1ecdc b\u1ed5ng", "shape": "dot"}, {"color": "#97c2fc", "id": "ng\u00e2n h\u00e0ng ch\u00ednh s\u00e1ch x\u00e3 h\u1ed9i", "label": "ng\u00e2n h\u00e0ng ch\u00ednh s\u00e1ch x\u00e3 h\u1ed9i", "shape": "dot"}, {"color": "#97c2fc", "id": "h\u1ed3 s\u01a1 sinh vi\u00ean", "label": "h\u1ed3 s\u01a1 sinh vi\u00ean", "shape": "dot"}, {"color": "#97c2fc", "id": "H\u1ed3 s\u01a1 y\u00eau c\u1ea7u b\u1ed3i th\u01b0\u1eddng b\u1ea3o hi\u1ec3m tai n\u1ea1n sinh vi\u00ean", "label": "H\u1ed3 s\u01a1 y\u00eau c\u1ea7u b\u1ed3i th\u01b0\u1eddng b\u1ea3o hi\u1ec3m tai n\u1ea1n sinh vi\u00ean", "shape": "dot"}, {"color": "#97c2fc", "id": "th\u00f4ng tin", "label": "th\u00f4ng tin", "shape": "dot"}, {"color": "#97c2fc", "id": "Th\u00f4ng tin v\u1ec1 b\u1ea3o hi\u1ec3m y t\u1ebf", "label": "Th\u00f4ng tin v\u1ec1 b\u1ea3o hi\u1ec3m y t\u1ebf", "shape": "dot"}, {"color": "#97c2fc", "id": "H\u01b0\u1edbng d\u1eabn s\u1eed d\u1ee5ng c\u00e1c k\u00eanh thanh to\u00e1n h\u1ecdc ph\u00ed, BHYT, l\u1ec7 ph\u00ed x\u00e9t t\u1ed1t nghi\u1ec7p", "label": "H\u01b0\u1edbng d\u1eabn s\u1eed d\u1ee5ng c\u00e1c k\u00eanh thanh to\u00e1n h\u1ecdc ph\u00ed, BHYT, l\u1ec7 ph\u00ed x\u00e9t t\u1ed1t nghi\u1ec7p", "shape": "dot"}, {"color": "#97c2fc", "id": "Tham v\u1ea5n t\u00e2m l\u00fd h\u1ecdc \u0111\u01b0\u1eddng", "label": "Tham v\u1ea5n t\u00e2m l\u00fd h\u1ecdc \u0111\u01b0\u1eddng", "shape": "dot"}, {"color": "#97c2fc", "id": "d\u1ecbch v\u1ee5", "label": "d\u1ecbch v\u1ee5", "shape": "dot"}, {"color": "#97c2fc", "id": "Trung t\u00e2m D\u1ecbch v\u1ee5 Sinh vi\u00ean", "label": "Trung t\u00e2m D\u1ecbch v\u1ee5 Sinh vi\u00ean", "shape": "dot"}, {"color": "#97c2fc", "id": "PH\u1ea6N 1", "label": "PH\u1ea6N 1", "shape": "dot"}, {"color": "#97c2fc", "id": "NLU - \u0110\u1ecbnh h\u01b0\u1edbng tr\u01b0\u1eddng \u0111\u1ea1i h\u1ecdc nghi\u00ean c\u1ee9u", "label": "NLU - \u0110\u1ecbnh h\u01b0\u1edbng tr\u01b0\u1eddng \u0111\u1ea1i h\u1ecdc nghi\u00ean c\u1ee9u", "shape": "dot"}, {"color": "#97c2fc", "id": "NLU", "label": "NLU", "shape": "dot"}, {"color": "#97c2fc", "id": "tr\u01b0\u1eddng \u0111\u1ea1i h\u1ecdc nghi\u00ean c\u1ee9u", "label": "tr\u01b0\u1eddng \u0111\u1ea1i h\u1ecdc nghi\u00ean c\u1ee9u", "shape": "dot"}, {"color": "#97c2fc", "id": "Tr\u01b0\u1eddng \u0110\u1ea1i h\u1ecdc N\u00f4ng L\u00e2m Th\u00e0nh ph\u1ed1 H\u1ed3 Ch\u00ed Minh (NLU)", "label": "Tr\u01b0\u1eddng \u0110\u1ea1i h\u1ecdc N\u00f4ng L\u00e2m Th\u00e0nh ph\u1ed1 H\u1ed3 Ch\u00ed Minh (NLU)", "shape": "dot"}, {"color": "#97c2fc", "id": "\u0111a ng\u00e0nh, tr\u1ef1c thu\u1ed9c B\u1ed9 Gi\u00e1o d\u1ee5c v\u00e0 \u0110\u00e0o t\u1ea1o", "label": "\u0111a ng\u00e0nh, tr\u1ef1c thu\u1ed9c B\u1ed9 Gi\u00e1o d\u1ee5c v\u00e0 \u0110\u00e0o t\u1ea1o", "shape": "dot"}, {"color": "#97c2fc", "id": "khu \u0111\u1ea5t r\u1ed9ng 118 ha, thu\u1ed9c Th\u00e0nh ph\u1ed1 Th\u1ee7 \u0110\u1ee9c, Th\u00e0nh ph\u1ed1 H\u1ed3 Ch\u00ed Minh v\u00e0 Th\u00e0nh ph\u1ed1 D\u0129 An - T\u1ec9nh B\u00ecnh D\u01b0\u01a1ng", "label": "khu \u0111\u1ea5t r\u1ed9ng 118 ha, thu\u1ed9c Th\u00e0nh ph\u1ed1 Th\u1ee7 \u0110\u1ee9c, Th\u00e0nh ph\u1ed1 H\u1ed3 Ch\u00ed Minh v\u00e0 Th\u00e0nh ph\u1ed1 D\u0129 An - T\u1ec9nh B\u00ecnh D\u01b0\u01a1ng", "shape": "dot"}, {"color": "#97c2fc", "id": "xu\u1ea5t s\u1eafc v\u1ec1 \u0111\u00e0o t\u1ea1o, nghi\u00ean c\u1ee9u v\u00e0 \u1ee9ng d\u1ee5ng khoa h\u1ecdc k\u1ef9 thu\u1eadt n\u00f4ng l\u00e2m ng\u01b0 nghi\u1ec7p, chuy\u1ec3n giao c\u00f4ng ngh\u1ec7, quan h\u1ec7 qu\u1ed1c t\u1ebf", "label": "xu\u1ea5t s\u1eafc v\u1ec1 \u0111\u00e0o t\u1ea1o, nghi\u00ean c\u1ee9u v\u00e0 \u1ee9ng d\u1ee5ng khoa h\u1ecdc k\u1ef9 thu\u1eadt n\u00f4ng l\u00e2m ng\u01b0 nghi\u1ec7p, chuy\u1ec3n giao c\u00f4ng ngh\u1ec7, quan h\u1ec7 qu\u1ed1c t\u1ebf", "shape": "dot"}, {"color": "#97c2fc", "id": "Hu\u00e2n ch\u01b0\u01a1ng Lao \u0111\u1ed9ng H\u1ea1ng ba, Hu\u00e2n ch\u01b0\u01a1ng Lao \u0111\u1ed9ng H\u1ea1ng nh\u1ea5t, Hu\u00e2n ch\u01b0\u01a1ng \u0110\u1ed9c l\u1eadp H\u1ea1ng ba", "label": "Hu\u00e2n ch\u01b0\u01a1ng Lao \u0111\u1ed9ng H\u1ea1ng ba, Hu\u00e2n ch\u01b0\u01a1ng Lao \u0111\u1ed9ng H\u1ea1ng nh\u1ea5t, Hu\u00e2n ch\u01b0\u01a1ng \u0110\u1ed9c l\u1eadp H\u1ea1ng ba", "shape": "dot"}, {"color": "#97c2fc", "id": "g\u1ea7n 70 n\u0103m x\u00e2y d\u1ef1ng v\u00e0 ph\u00e1t tri\u1ec3n", "label": "g\u1ea7n 70 n\u0103m x\u00e2y d\u1ef1ng v\u00e0 ph\u00e1t tri\u1ec3n", "shape": "dot"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Ph\u1ea7n 1: NLU - \u0110\u1ecbnh h\u01b0\u1edbng tr\u01b0\u1eddng \u0111\u1ea1i h\u1ecdc nghi\u00ean c\u1ee9u", "label": "\u1edf trang", "to": "7"}, {"arrows": "to", "from": "Qu\u00e1 tr\u00ecnh h\u00ecnh th\u00e0nh v\u00e0 ph\u00e1t tri\u1ec3n", "label": "\u1edf trang", "to": "8"}, {"arrows": "to", "from": "S\u1ee9 m\u1ea1ng", "label": "\u1edf trang", "to": "8"}, {"arrows": "to", "from": "T\u1ea7m nh\u00ecn", "label": "\u1edf trang", "to": "8"}, {"arrows": "to", "from": "Gi\u00e1 tr\u1ecb c\u1ed1t l\u00f5i", "label": "\u1edf trang", "to": "8"}, {"arrows": "to", "from": "C\u00e1c \u0111\u01a1n v\u1ecb", "label": "trong", "to": "tr\u01b0\u1eddng"}, {"arrows": "to", "from": "C\u00e1c khoa", "label": "ng\u00e0nh \u0111\u00e0o t\u1ea1o", "to": ""}, {"arrows": "to", "from": "Tu\u1ea7n sinh ho\u1ea1t", "label": "c\u00f4ng d\u00e2n - sinh vi\u00ean", "to": ""}, {"arrows": "to", "from": "Ho\u1ea1t \u0111\u1ed9ng phong tr\u00e0o", "label": "sinh vi\u00ean", "to": ""}, {"arrows": "to", "from": "Ho\u1ea1t \u0111\u1ed9ng phong tr\u00e0o sinh vi\u00ean", "label": "l\u00e0", "to": "None"}, {"arrows": "to", "from": "C\u00e2u l\u1ea1c b\u1ed9 (CLB) - \u0110\u1ed9i, Nh\u00f3m", "label": "l\u00e0", "to": "None"}, {"arrows": "to", "from": "C\u01a1 s\u1edf \u0111\u00e0o t\u1ea1o", "label": "l\u00e0", "to": "None"}, {"arrows": "to", "from": "Quy ch\u1ebf sinh vi\u00ean", "label": "l\u00e0", "to": "None"}, {"arrows": "to", "from": "Quy ch\u1ebf sinh vi\u00ean", "label": "l\u00e0 ph\u1ea7n", "to": "23"}, {"arrows": "to", "from": "Quy ch\u1ebf h\u1ecdc v\u1ee5", "label": "l\u00e0 ph\u1ea7n", "to": "24"}, {"arrows": "to", "from": "Quy \u0111\u1ecbnh v\u1ec1 vi\u1ec7c \u0111\u00e0o t\u1ea1o tr\u1ef1c tuy\u1ebfn", "label": "l\u00e0 ph\u1ea7n", "to": "27"}, {"arrows": "to", "from": "Quy \u0111\u1ecbnh khen th\u01b0\u1edfng, k\u1ef7 lu\u1eadt sinh vi\u00ean", "label": "l\u00e0 ph\u1ea7n", "to": "42"}, {"arrows": "to", "from": "Quy ch\u1ebf \u0111\u00e1nh gi\u00e1 k\u1ebft qu\u1ea3 r\u00e8n luy\u1ec7n", "label": "l\u00e0 ph\u1ea7n", "to": "45"}, {"arrows": "to", "from": "Quy t\u1eafc \u1ee9ng x\u1eed v\u0103n h\u00f3a", "label": "trang", "to": "54"}, {"arrows": "to", "from": "C\u1ed1 v\u1ea5n h\u1ecdc t\u1eadp", "label": "trang", "to": "55"}, {"arrows": "to", "from": "Danh hi\u1ec7u sinh vi\u00ean 5 t\u1ed1t", "label": "trang", "to": "56"}, {"arrows": "to", "from": "Danh hi\u1ec7u sinh vi\u00ean ti\u00eau bi\u1ec3u", "label": "trang", "to": "58"}, {"arrows": "to", "from": "Ph\u1ea7n 3: H\u1ed6 TR\u1ee2 V\u00c0 D\u1ecaCH V\u1ee4", "label": "trang", "to": "59"}, {"arrows": "to", "from": "Quy \u0111\u1ecbnh ph\u00e2n c\u1ea5p gi\u1ea3i", "label": "trang", "to": "59"}, {"arrows": "to", "from": "sinh vi\u00ean", "label": "th\u1eafc m\u1eafc", "to": "quy\u1ebft"}, {"arrows": "to", "from": "h\u1ecdc b\u1ed5ng", "label": "th\u00f4ng tin", "to": ""}, {"arrows": "to", "from": "sinh vi\u00ean", "label": "vay v\u1ed1n h\u1ecdc t\u1eadp", "to": "ng\u00e2n h\u00e0ng ch\u00ednh s\u00e1ch x\u00e3 h\u1ed9i"}, {"arrows": "to", "from": "h\u1ed3 s\u01a1 sinh vi\u00ean", "label": "quy tr\u00ecnh x\u00e1c nh\u1eadn", "to": ""}, {"arrows": "to", "from": "sinh vi\u00ean", "label": "h\u1ed3 s\u01a1 y\u00eau c\u1ea7u b\u1ed3i th\u01b0\u1eddng b\u1ea3o hi\u1ec3m tai n\u1ea1n", "to": ""}, {"arrows": "to", "from": "H\u1ed3 s\u01a1 y\u00eau c\u1ea7u b\u1ed3i th\u01b0\u1eddng b\u1ea3o hi\u1ec3m tai n\u1ea1n sinh vi\u00ean", "label": "l\u00e0", "to": "th\u00f4ng tin"}, {"arrows": "to", "from": "Th\u00f4ng tin v\u1ec1 b\u1ea3o hi\u1ec3m y t\u1ebf", "label": "l\u00e0", "to": "th\u00f4ng tin"}, {"arrows": "to", "from": "H\u01b0\u1edbng d\u1eabn s\u1eed d\u1ee5ng c\u00e1c k\u00eanh thanh to\u00e1n h\u1ecdc ph\u00ed, BHYT, l\u1ec7 ph\u00ed x\u00e9t t\u1ed1t nghi\u1ec7p", "label": "l\u00e0", "to": "th\u00f4ng tin"}, {"arrows": "to", "from": "Tham v\u1ea5n t\u00e2m l\u00fd h\u1ecdc \u0111\u01b0\u1eddng", "label": "l\u00e0", "to": "d\u1ecbch v\u1ee5"}, {"arrows": "to", "from": "Trung t\u00e2m D\u1ecbch v\u1ee5 Sinh vi\u00ean", "label": "cung c\u1ea5p", "to": "d\u1ecbch v\u1ee5"}, {"arrows": "to", "from": "PH\u1ea6N 1", "label": "l\u00e0", "to": "NLU - \u0110\u1ecbnh h\u01b0\u1edbng tr\u01b0\u1eddng \u0111\u1ea1i h\u1ecdc nghi\u00ean c\u1ee9u"}, {"arrows": "to", "from": "NLU", "label": "\u0111\u1ecbnh h\u01b0\u1edbng", "to": "tr\u01b0\u1eddng \u0111\u1ea1i h\u1ecdc nghi\u00ean c\u1ee9u"}, {"arrows": "to", "from": "Tr\u01b0\u1eddng \u0110\u1ea1i h\u1ecdc N\u00f4ng L\u00e2m Th\u00e0nh ph\u1ed1 H\u1ed3 Ch\u00ed Minh (NLU)", "label": "l\u00e0 tr\u01b0\u1eddng", "to": "\u0111a ng\u00e0nh, tr\u1ef1c thu\u1ed9c B\u1ed9 Gi\u00e1o d\u1ee5c v\u00e0 \u0110\u00e0o t\u1ea1o"}, {"arrows": "to", "from": "Tr\u01b0\u1eddng \u0110\u1ea1i h\u1ecdc N\u00f4ng L\u00e2m Th\u00e0nh ph\u1ed1 H\u1ed3 Ch\u00ed Minh (NLU)", "label": "t\u1ecda l\u1ea1c", "to": "khu \u0111\u1ea5t r\u1ed9ng 118 ha, thu\u1ed9c Th\u00e0nh ph\u1ed1 Th\u1ee7 \u0110\u1ee9c, Th\u00e0nh ph\u1ed1 H\u1ed3 Ch\u00ed Minh v\u00e0 Th\u00e0nh ph\u1ed1 D\u0129 An - T\u1ec9nh B\u00ecnh D\u01b0\u01a1ng"}, {"arrows": "to", "from": "Tr\u01b0\u1eddng \u0110\u1ea1i h\u1ecdc N\u00f4ng L\u00e2m Th\u00e0nh ph\u1ed1 H\u1ed3 Ch\u00ed Minh (NLU)", "label": "\u0111\u1ea1t nhi\u1ec1u th\u00e0nh t\u00edch", "to": "xu\u1ea5t s\u1eafc v\u1ec1 \u0111\u00e0o t\u1ea1o, nghi\u00ean c\u1ee9u v\u00e0 \u1ee9ng d\u1ee5ng khoa h\u1ecdc k\u1ef9 thu\u1eadt n\u00f4ng l\u00e2m ng\u01b0 nghi\u1ec7p, chuy\u1ec3n giao c\u00f4ng ngh\u1ec7, quan h\u1ec7 qu\u1ed1c t\u1ebf"}, {"arrows": "to", "from": "Tr\u01b0\u1eddng \u0110\u1ea1i h\u1ecdc N\u00f4ng L\u00e2m Th\u00e0nh ph\u1ed1 H\u1ed3 Ch\u00ed Minh (NLU)", "label": "\u0111\u01b0\u1ee3c nh\u1eadn", "to": "Hu\u00e2n ch\u01b0\u01a1ng Lao \u0111\u1ed9ng H\u1ea1ng ba, Hu\u00e2n ch\u01b0\u01a1ng Lao \u0111\u1ed9ng H\u1ea1ng nh\u1ea5t, Hu\u00e2n ch\u01b0\u01a1ng \u0110\u1ed9c l\u1eadp H\u1ea1ng ba"}, {"arrows": "to", "from": "Tr\u01b0\u1eddng \u0110\u1ea1i h\u1ecdc N\u00f4ng L\u00e2m Th\u00e0nh ph\u1ed1 H\u1ed3 Ch\u00ed Minh (NLU)", "label": "tr\u1ea3i qua", "to": "g\u1ea7n 70 n\u0103m x\u00e2y d\u1ef1ng v\u00e0 ph\u00e1t tri\u1ec3n"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "repulsion": {
+            "centralGravity": 0.2,
+            "damping": 0.09,
+            "nodeDistance": 200,
+            "springConstant": 0.05,
+            "springLength": 200
+        },
+        "solver": "repulsion",
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

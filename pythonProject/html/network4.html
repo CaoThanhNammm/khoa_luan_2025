@@ -1,0 +1,258 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: auto;
+                 height: 700px;
+                 background-color: #eeeeee;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+             #loadingBar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width: auto;
+                 height: 700px;
+                 background-color:rgba(200,200,200,0.8);
+                 -webkit-transition: all 0.5s ease;
+                 -moz-transition: all 0.5s ease;
+                 -ms-transition: all 0.5s ease;
+                 -o-transition: all 0.5s ease;
+                 transition: all 0.5s ease;
+                 opacity:1;
+             }
+
+             #bar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width:20px;
+                 height:20px;
+                 margin:auto auto auto auto;
+                 border-radius:11px;
+                 border:2px solid rgba(30,30,30,0.05);
+                 background: rgb(0, 173, 246); /* Old browsers */
+                 box-shadow: 2px 0px 4px rgba(0,0,0,0.4);
+             }
+
+             #border {
+                 position:absolute;
+                 top:10px;
+                 left:10px;
+                 width:500px;
+                 height:23px;
+                 margin:auto auto auto auto;
+                 box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
+                 border-radius:10px;
+             }
+
+             #text {
+                 position:absolute;
+                 top:8px;
+                 left:530px;
+                 width:30px;
+                 height:50px;
+                 margin:auto auto auto auto;
+                 font-size:22px;
+                 color: #000000;
+             }
+
+             div.outerBorder {
+                 position:relative;
+                 top:400px;
+                 width:600px;
+                 height:44px;
+                 margin:auto auto auto auto;
+                 border:8px solid rgba(0,0,0,0.1);
+                 background: rgb(252,252,252); /* Old browsers */
+                 background: -moz-linear-gradient(top,  rgba(252,252,252,1) 0%, rgba(237,237,237,1) 100%); /* FF3.6+ */
+                 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(252,252,252,1)), color-stop(100%,rgba(237,237,237,1))); /* Chrome,Safari4+ */
+                 background: -webkit-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Chrome10+,Safari5.1+ */
+                 background: -o-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Opera 11.10+ */
+                 background: -ms-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* IE10+ */
+                 background: linear-gradient(to bottom,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* W3C */
+                 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+                 border-radius:72px;
+                 box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+             }
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+            <div id="loadingBar">
+              <div class="outerBorder">
+                <div id="text">0%</div>
+                <div id="border">
+                  <div id="bar"></div>
+                </div>
+              </div>
+            </div>
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#97c2fc", "id": "Tr\u01b0\u1eddng \u0110\u1ea1i h\u1ecdc N\u00f4ng L\u00e2m TP.HCM", "label": "Tr\u01b0\u1eddng \u0110\u1ea1i h\u1ecdc N\u00f4ng L\u00e2m TP.HCM", "shape": "dot"}, {"color": "#97c2fc", "id": "CLB, \u0111\u1ed9i, nh\u00f3m c\u1ea5p Tr\u01b0\u1eddng", "label": "CLB, \u0111\u1ed9i, nh\u00f3m c\u1ea5p Tr\u01b0\u1eddng", "shape": "dot"}, {"color": "#97c2fc", "id": "CLB, \u0111\u1ed9i, nh\u00f3m c\u1ea5p Khoa", "label": "CLB, \u0111\u1ed9i, nh\u00f3m c\u1ea5p Khoa", "shape": "dot"}, {"color": "#97c2fc", "id": "CLB, \u0111\u1ed9i, nh\u00f3m", "label": "CLB, \u0111\u1ed9i, nh\u00f3m", "shape": "dot"}, {"color": "#97c2fc", "id": "h\u1ecdc thu\u1eadt, k\u1ef9 n\u0103ng, v\u0103n h\u00f3a, ngh\u1ec7 thu\u1eadt, th\u1ec3 thao", "label": "h\u1ecdc thu\u1eadt, k\u1ef9 n\u0103ng, v\u0103n h\u00f3a, ngh\u1ec7 thu\u1eadt, th\u1ec3 thao", "shape": "dot"}, {"color": "#97c2fc", "id": "sinh vi\u00ean", "label": "sinh vi\u00ean", "shape": "dot"}, {"color": "#97c2fc", "id": "CLB, \u0110\u1ed9i, Nh\u00f3m", "label": "CLB, \u0110\u1ed9i, Nh\u00f3m", "shape": "dot"}, {"color": "#97c2fc", "id": "tuy\u1ec3n t\u00e2n th\u00e0nh vi\u00ean", "label": "tuy\u1ec3n t\u00e2n th\u00e0nh vi\u00ean", "shape": "dot"}, {"color": "#97c2fc", "id": "CLB C\u00c1N B\u1ed8 \u0110O\u00c0N NG\u00d4I SAO XANH", "label": "CLB C\u00c1N B\u1ed8 \u0110O\u00c0N NG\u00d4I SAO XANH", "shape": "dot"}, {"color": "#97c2fc", "id": "D\u00e1m ngh\u0129 - bi\u1ebft l\u00e0m - d\u00e1m h\u00e0nh \u0111\u1ed9ng", "label": "D\u00e1m ngh\u0129 - bi\u1ebft l\u00e0m - d\u00e1m h\u00e0nh \u0111\u1ed9ng", "shape": "dot"}, {"color": "#97c2fc", "id": "\u0110\u00e0o t\u1ea1o l\u1ef1c l\u01b0\u1ee3ng C\u00e1n b\u1ed9 \u0110o\u00e0n\u2013H\u1ed9i", "label": "\u0110\u00e0o t\u1ea1o l\u1ef1c l\u01b0\u1ee3ng C\u00e1n b\u1ed9 \u0110o\u00e0n\u2013H\u1ed9i", "shape": "dot"}, {"color": "#97c2fc", "id": "\u0110o\u00e0n Thanh ni\u00ean", "label": "\u0110o\u00e0n Thanh ni\u00ean", "shape": "dot"}, {"color": "#97c2fc", "id": "H\u1ed3 Th\u1ecb Thanh H\u1ed3ng", "label": "H\u1ed3 Th\u1ecb Thanh H\u1ed3ng", "shape": "dot"}, {"color": "#97c2fc", "id": "clbdoanngoisaoxanh@hcmuaf.edu.vn", "label": "clbdoanngoisaoxanh@hcmuaf.edu.vn", "shape": "dot"}, {"color": "#97c2fc", "id": "https://www.facebook.com/ClbCanBoDoanNgoiSaoXanh", "label": "https://www.facebook.com/ClbCanBoDoanNgoiSaoXanh", "shape": "dot"}, {"color": "#97c2fc", "id": "BEC ENGLISH CLUB", "label": "BEC ENGLISH CLUB", "shape": "dot"}, {"color": "#97c2fc", "id": "One benefit/One Energy/One Chance BEC", "label": "One benefit/One Energy/One Chance BEC", "shape": "dot"}, {"color": "#97c2fc", "id": "H\u1ecdc thu\u1eadt", "label": "H\u1ecdc thu\u1eadt", "shape": "dot"}, {"color": "#97c2fc", "id": "\u0110o\u00e0n\u2013H\u1ed9i khoa Khoa h\u1ecdc sinh h\u1ecdc", "label": "\u0110o\u00e0n\u2013H\u1ed9i khoa Khoa h\u1ecdc sinh h\u1ecdc", "shape": "dot"}, {"color": "#97c2fc", "id": "Nguy\u1ec5n L\u00ea Thanh Vy", "label": "Nguy\u1ec5n L\u00ea Thanh Vy", "shape": "dot"}, {"color": "#97c2fc", "id": "bec@tuoitrenonglam.com", "label": "bec@tuoitrenonglam.com", "shape": "dot"}, {"color": "#97c2fc", "id": "https://www.facebook.com/BioEnglishClub", "label": "https://www.facebook.com/BioEnglishClub", "shape": "dot"}, {"color": "#97c2fc", "id": "CLB B\u00d3NG R\u1ed4 \u0110\u1ea0I H\u1eccC N\u00d4NG L\u00c2M", "label": "CLB B\u00d3NG R\u1ed4 \u0110\u1ea0I H\u1eccC N\u00d4NG L\u00c2M", "shape": "dot"}, {"color": "#97c2fc", "id": "1 2 3 N\u00f4ng L\u00e2m (x3)", "label": "1 2 3 N\u00f4ng L\u00e2m (x3)", "shape": "dot"}, {"color": "#97c2fc", "id": "Th\u1ec3 thao", "label": "Th\u1ec3 thao", "shape": "dot"}, {"color": "#97c2fc", "id": "H\u1ed9i th\u1ec3 thao", "label": "H\u1ed9i th\u1ec3 thao", "shape": "dot"}, {"color": "#97c2fc", "id": "CLB B\u00d3NG R\u1ed4", "label": "CLB B\u00d3NG R\u1ed4", "shape": "dot"}, {"color": "#97c2fc", "id": "H\u1ed3 Thanh T\u00fa", "label": "H\u1ed3 Thanh T\u00fa", "shape": "dot"}, {"color": "#97c2fc", "id": "hothanhtusbb11@gmail.com", "label": "hothanhtusbb11@gmail.com", "shape": "dot"}, {"color": "#97c2fc", "id": "https://www.facebook.com/NLUBASKETBALL", "label": "https://www.facebook.com/NLUBASKETBALL", "shape": "dot"}, {"color": "#97c2fc", "id": "CLB DU L\u1ecaCH SINH TH\u00c1I", "label": "CLB DU L\u1ecaCH SINH TH\u00c1I", "shape": "dot"}, {"color": "#97c2fc", "id": "K\u1ebft n\u1ed1i \u0111am m\u00ea", "label": "K\u1ebft n\u1ed1i \u0111am m\u00ea", "shape": "dot"}, {"color": "#97c2fc", "id": "H\u1ecdc thu\u1eadt, b\u1ea3o v\u1ec7 m\u00f4i tr\u01b0\u1eddng, ho\u1ea1t \u0111\u1ed9ng thi\u1ec7n nguy\u1ec7n x\u00e3 h\u1ed9i", "label": "H\u1ecdc thu\u1eadt, b\u1ea3o v\u1ec7 m\u00f4i tr\u01b0\u1eddng, ho\u1ea1t \u0111\u1ed9ng thi\u1ec7n nguy\u1ec7n x\u00e3 h\u1ed9i", "shape": "dot"}, {"color": "#97c2fc", "id": "\u0110o\u00e0n\u2013H\u1ed9i khoa M\u00f4i tr\u01b0\u1eddng \u2013 T\u00e0i nguy\u00ean", "label": "\u0110o\u00e0n\u2013H\u1ed9i khoa M\u00f4i tr\u01b0\u1eddng \u2013 T\u00e0i nguy\u00ean", "shape": "dot"}, {"color": "#97c2fc", "id": "Tr\u1ea7n L\u00ea Hi\u1ebfu", "label": "Tr\u1ea7n L\u00ea Hi\u1ebfu", "shape": "dot"}, {"color": "#97c2fc", "id": "dlst@tuoitrenonglam.com", "label": "dlst@tuoitrenonglam.com", "shape": "dot"}, {"color": "#97c2fc", "id": "https://www.facebook.com/dlst.info", "label": "https://www.facebook.com/dlst.info", "shape": "dot"}, {"color": "#97c2fc", "id": "CLB D\u01af\u1ee2C TH\u00da Y", "label": "CLB D\u01af\u1ee2C TH\u00da Y", "shape": "dot"}, {"color": "#97c2fc", "id": "H\u1ecdc t\u1eadp \u2013 Chia s\u1ebb - Nghi\u00ean c\u1ee9u \u2013 S\u00e1ng t\u1ea1o", "label": "H\u1ecdc t\u1eadp \u2013 Chia s\u1ebb - Nghi\u00ean c\u1ee9u \u2013 S\u00e1ng t\u1ea1o", "shape": "dot"}, {"color": "#97c2fc", "id": "H\u1ecdc thu\u1eadt, Nghi\u00ean c\u1ee9u khoa h\u1ecdc", "label": "H\u1ecdc thu\u1eadt, Nghi\u00ean c\u1ee9u khoa h\u1ecdc", "shape": "dot"}, {"color": "#97c2fc", "id": "\u0110o\u00e0n \u2013 H\u1ed9i khoa Ch\u0103n nu\u00f4i Th\u00fa y", "label": "\u0110o\u00e0n \u2013 H\u1ed9i khoa Ch\u0103n nu\u00f4i Th\u00fa y", "shape": "dot"}, {"color": "#97c2fc", "id": "Nguy\u1ec5n N\u1eef Mai Th\u01a1", "label": "Nguy\u1ec5n N\u1eef Mai Th\u01a1", "shape": "dot"}, {"color": "#97c2fc", "id": "C\u00e2u l\u1ea1c b\u1ed9 D\u01b0\u1ee3c Th\u00fa Y", "label": "C\u00e2u l\u1ea1c b\u1ed9 D\u01b0\u1ee3c Th\u00fa Y", "shape": "dot"}, {"color": "#97c2fc", "id": "duocthuynlu@gmail.com", "label": "duocthuynlu@gmail.com", "shape": "dot"}, {"color": "#97c2fc", "id": "Ph\u1ea1m Ch\u00ed Bi\u1ebft", "label": "Ph\u1ea1m Ch\u00ed Bi\u1ebft", "shape": "dot"}, {"color": "#97c2fc", "id": "CLB \u0110\u1ed2NG H\u00c0NH \u2013 AC", "label": "CLB \u0110\u1ed2NG H\u00c0NH \u2013 AC", "shape": "dot"}, {"color": "#97c2fc", "id": "\u0110\u1ed3ng h\u00e0nh AC - \u0110\u1ed3ng h\u00e0nh c\u00f9ng sinh vi\u00ean", "label": "\u0110\u1ed3ng h\u00e0nh AC - \u0110\u1ed3ng h\u00e0nh c\u00f9ng sinh vi\u00ean", "shape": "dot"}, {"color": "#97c2fc", "id": "ac@tuoitrenonglam.com", "label": "ac@tuoitrenonglam.com", "shape": "dot"}, {"color": "#97c2fc", "id": "https://www.facebook.com/clbdonghanh.ac", "label": "https://www.facebook.com/clbdonghanh.ac", "shape": "dot"}, {"color": "#97c2fc", "id": "Nguy\u1ec5n Ho\u00e0ng Nam Ph\u01b0\u01a1ng", "label": "Nguy\u1ec5n Ho\u00e0ng Nam Ph\u01b0\u01a1ng", "shape": "dot"}, {"color": "#97c2fc", "id": "FIRE ENGLISH CLUB", "label": "FIRE ENGLISH CLUB", "shape": "dot"}, {"color": "#97c2fc", "id": "We are FIRE \u2013 FIRE KH\u00d4NG PHAI M\u1edc", "label": "We are FIRE \u2013 FIRE KH\u00d4NG PHAI M\u1edc", "shape": "dot"}, {"color": "#97c2fc", "id": "fireenglishclub@tuoitrenonglam.com", "label": "fireenglishclub@tuoitrenonglam.com", "shape": "dot"}, {"color": "#97c2fc", "id": "https://www.facebook.com/FiRE.EnglishClub", "label": "https://www.facebook.com/FiRE.EnglishClub", "shape": "dot"}, {"color": "#97c2fc", "id": "\u0110o\u00e0n\u2013H\u1ed9i khoa Ngo\u1ea1i ng\u1eef\u2013S\u01b0 ph\u1ea1m", "label": "\u0110o\u00e0n\u2013H\u1ed9i khoa Ngo\u1ea1i ng\u1eef\u2013S\u01b0 ph\u1ea1m", "shape": "dot"}, {"color": "#97c2fc", "id": "CLB FiRE English", "label": "CLB FiRE English", "shape": "dot"}, {"color": "#97c2fc", "id": "CLB H\u1eccC THU\u1eacT\u2013K\u1ef8 N\u0102NG QU\u1ea2N TR\u1eca (B.A.S)", "label": "CLB H\u1eccC THU\u1eacT\u2013K\u1ef8 N\u0102NG QU\u1ea2N TR\u1eca (B.A.S)", "shape": "dot"}, {"color": "#97c2fc", "id": "B.A.S \u0111\u1ebfn v\u1edbi nhau b\u1eb1ng nhi\u1ec7t huy\u1ebft, \u1edf l\u1ea1i v\u1edbi nhau b\u1eb1ng t\u00ecnh c\u1ea3m!", "label": "B.A.S \u0111\u1ebfn v\u1edbi nhau b\u1eb1ng nhi\u1ec7t huy\u1ebft, \u1edf l\u1ea1i v\u1edbi nhau b\u1eb1ng t\u00ecnh c\u1ea3m!", "shape": "dot"}, {"color": "#97c2fc", "id": "K\u1ef9 n\u0103ng, th\u1ec3 thao, t\u00ecnh nguy\u1ec7n, h\u1ecdc thu\u1eadt, v\u0103n ngh\u1ec7, truy\u1ec1n th\u00f4ng", "label": "K\u1ef9 n\u0103ng, th\u1ec3 thao, t\u00ecnh nguy\u1ec7n, h\u1ecdc thu\u1eadt, v\u0103n ngh\u1ec7, truy\u1ec1n th\u00f4ng", "shape": "dot"}, {"color": "#97c2fc", "id": "Ph\u00f2ng C\u00f4ng t\u00e1c sinh vi\u00ean", "label": "Ph\u00f2ng C\u00f4ng t\u00e1c sinh vi\u00ean", "shape": "dot"}, {"color": "#97c2fc", "id": "V\u00f5 L\u00ea B\u00e1ch", "label": "V\u00f5 L\u00ea B\u00e1ch", "shape": "dot"}, {"color": "#97c2fc", "id": "caulacbo.b.a.s@gmail.com", "label": "caulacbo.b.a.s@gmail.com", "shape": "dot"}, {"color": "#97c2fc", "id": "https://www.facebook.com/CLB.B.A.S", "label": "https://www.facebook.com/CLB.B.A.S", "shape": "dot"}, {"color": "#97c2fc", "id": "CLB KARATE-DO", "label": "CLB KARATE-DO", "shape": "dot"}, {"color": "#97c2fc", "id": "R\u00e8n luy\u1ec7n tinh th\u1ea7n v\u00e0 th\u1ec3 l\u1ef1c \u0111\u1ec3 v\u1eefng b\u01b0\u1edbc cho t\u01b0\u01a1ng lai.", "label": "R\u00e8n luy\u1ec7n tinh th\u1ea7n v\u00e0 th\u1ec3 l\u1ef1c \u0111\u1ec3 v\u1eefng b\u01b0\u1edbc cho t\u01b0\u01a1ng lai.", "shape": "dot"}, {"color": "#97c2fc", "id": "L\u00ea Quang Tr\u00ed", "label": "L\u00ea Quang Tr\u00ed", "shape": "dot"}, {"color": "#97c2fc", "id": "Kiai", "label": "Kiai", "shape": "dot"}, {"color": "#97c2fc", "id": "Lequangtri@hcmuaf.edu.vn", "label": "Lequangtri@hcmuaf.edu.vn", "shape": "dot"}, {"color": "#97c2fc", "id": "https://www.facebook.com/groups/308034235884043", "label": "https://www.facebook.com/groups/308034235884043", "shape": "dot"}, {"color": "#97c2fc", "id": "CLB K\u1ebeT N\u1ed0I TH\u00c0NH C\u00d4NG", "label": "CLB K\u1ebeT N\u1ed0I TH\u00c0NH C\u00d4NG", "shape": "dot"}, {"color": "#97c2fc", "id": "\u0110\u1ed3ng h\u00e0nh c\u00f9ng sinh vi\u00ean!", "label": "\u0110\u1ed3ng h\u00e0nh c\u00f9ng sinh vi\u00ean!", "shape": "dot"}, {"color": "#97c2fc", "id": "Trang b\u1ecb k\u1ef9 n\u0103ng m\u1ec1m, ho\u1ea1t \u0111\u1ed9ng t\u00ecnh nguy\u1ec7n x\u00e3 h\u1ed9i", "label": "Trang b\u1ecb k\u1ef9 n\u0103ng m\u1ec1m, ho\u1ea1t \u0111\u1ed9ng t\u00ecnh nguy\u1ec7n x\u00e3 h\u1ed9i", "shape": "dot"}, {"color": "#97c2fc", "id": "Trung t\u00e2m H\u1ed7 tr\u1ee3 Sinh vi\u00ean \u0026 Quan h\u1ec7 Doanh nghi\u1ec7p", "label": "Trung t\u00e2m H\u1ed7 tr\u1ee3 Sinh vi\u00ean \u0026 Quan h\u1ec7 Doanh nghi\u1ec7p", "shape": "dot"}, {"color": "#97c2fc", "id": "D\u01b0\u01a1ng Tri\u1ec7u Duy", "label": "D\u01b0\u01a1ng Tri\u1ec7u Duy", "shape": "dot"}, {"color": "#97c2fc", "id": "clbketnoithanhcong10@gmail.com", "label": "clbketnoithanhcong10@gmail.com", "shape": "dot"}, {"color": "#97c2fc", "id": "https://www.facebook.com/clbkntc", "label": "https://www.facebook.com/clbkntc", "shape": "dot"}, {"color": "#97c2fc", "id": "CLB KH\u1edeI NGHI\u1ec6P (NLU STARTUP CLUB) NSC", "label": "CLB KH\u1edeI NGHI\u1ec6P (NLU STARTUP CLUB) NSC", "shape": "dot"}, {"color": "#97c2fc", "id": "\u01af\u01a1m m\u1ea7m \u00fd t\u01b0\u1edfng \u2013 V\u1eefng b\u01b0\u1edbc th\u00e0nh c\u00f4ng", "label": "\u01af\u01a1m m\u1ea7m \u00fd t\u01b0\u1edfng \u2013 V\u1eefng b\u01b0\u1edbc th\u00e0nh c\u00f4ng", "shape": "dot"}, {"color": "#97c2fc", "id": "Kh\u1edfi nghi\u1ec7p, Nghi\u00ean c\u1ee9u khoa h\u1ecdc, H\u1ecdc thu\u1eadt, T\u00ecnh nguy\u1ec7n x\u00e3 h\u1ed9i", "label": "Kh\u1edfi nghi\u1ec7p, Nghi\u00ean c\u1ee9u khoa h\u1ecdc, H\u1ecdc thu\u1eadt, T\u00ecnh nguy\u1ec7n x\u00e3 h\u1ed9i", "shape": "dot"}, {"color": "#97c2fc", "id": "\u01af\u01a1m m\u1ea7m \u00fd t\u01b0\u1edfng", "label": "\u01af\u01a1m m\u1ea7m \u00fd t\u01b0\u1edfng", "shape": "dot"}, {"color": "#97c2fc", "id": "NLU", "label": "NLU", "shape": "dot"}, {"color": "#97c2fc", "id": "tr\u01b0\u1eddng \u0111\u1ea1i h\u1ecdc nghi\u00ean c\u1ee9u", "label": "tr\u01b0\u1eddng \u0111\u1ea1i h\u1ecdc nghi\u00ean c\u1ee9u", "shape": "dot"}, {"color": "#97c2fc", "id": "Trung t\u00e2m \u01af\u01a1m t\u1ea1o Doanh nghi\u1ec7p c\u00f4ng ngh\u1ec7", "label": "Trung t\u00e2m \u01af\u01a1m t\u1ea1o Doanh nghi\u1ec7p c\u00f4ng ngh\u1ec7", "shape": "dot"}, {"color": "#97c2fc", "id": "CLB Kh\u1edfi nghi\u1ec7p N\u00f4ng L\u00e2m", "label": "CLB Kh\u1edfi nghi\u1ec7p N\u00f4ng L\u00e2m", "shape": "dot"}, {"color": "#97c2fc", "id": "Tr\u1ea7n Ph\u1ea1m M\u1ef9 Duy\u00ean", "label": "Tr\u1ea7n Ph\u1ea1m M\u1ef9 Duy\u00ean", "shape": "dot"}, {"color": "#97c2fc", "id": "CLB M\u1ed9t S\u1ee9c Kh\u1ecfe TP.HCM", "label": "CLB M\u1ed9t S\u1ee9c Kh\u1ecfe TP.HCM", "shape": "dot"}, {"color": "#97c2fc", "id": "\u0110o\u00e0n - H\u1ed9i khoa Ch\u0103n nu\u00f4i Th\u00fa y", "label": "\u0110o\u00e0n - H\u1ed9i khoa Ch\u0103n nu\u00f4i Th\u00fa y", "shape": "dot"}, {"color": "#97c2fc", "id": "Vo\u0303 Minh Tr\u01b0\u01a1\u0300ng", "label": "Vo\u0303 Minh Tr\u01b0\u01a1\u0300ng", "shape": "dot"}, {"color": "#97c2fc", "id": "CLB S\u00e1ch v\u00e0 H\u00e0nh \u0111\u1ed9ng N\u00f4ng L\u00e2m TP.HCM", "label": "CLB S\u00e1ch v\u00e0 H\u00e0nh \u0111\u1ed9ng N\u00f4ng L\u00e2m TP.HCM", "shape": "dot"}, {"color": "#97c2fc", "id": "H\u1ecdc thu\u1eadt, truy\u1ec1n th\u00f4ng, s\u00e1ch", "label": "H\u1ecdc thu\u1eadt, truy\u1ec1n th\u00f4ng, s\u00e1ch", "shape": "dot"}, {"color": "#97c2fc", "id": "Th\u01b0 vi\u1ec7n", "label": "Th\u01b0 vi\u1ec7n", "shape": "dot"}, {"color": "#97c2fc", "id": "Ph\u1ea1m Th\u1ecb Huy\u00ean", "label": "Ph\u1ea1m Th\u1ecb Huy\u00ean", "shape": "dot"}, {"color": "#97c2fc", "id": "CLB S\u00c1CH V\u00c0 H\u00c0NH \u0110\u1ed8NG", "label": "CLB S\u00c1CH V\u00c0 H\u00c0NH \u0110\u1ed8NG", "shape": "dot"}, {"color": "#97c2fc", "id": "sachvahanhdong@tuoitrenonglam.com", "label": "sachvahanhdong@tuoitrenonglam.com", "shape": "dot"}, {"color": "#97c2fc", "id": "https://www.facebook.com/clbsvhdnlu", "label": "https://www.facebook.com/clbsvhdnlu", "shape": "dot"}, {"color": "#97c2fc", "id": "CLB TI\u1ebeNG ANH KHOA C\u00d4NG NGH\u1ec6 H\u00d3A H\u1eccC V\u00c0 TH\u1ef0C PH\u1ea8M (Seeds For Future) SFF", "label": "CLB TI\u1ebeNG ANH KHOA C\u00d4NG NGH\u1ec6 H\u00d3A H\u1eccC V\u00c0 TH\u1ef0C PH\u1ea8M (Seeds For Future) SFF", "shape": "dot"}, {"color": "#97c2fc", "id": "H\u1ecdc thu\u1eadt, ngo\u1ea1i ng\u1eef", "label": "H\u1ecdc thu\u1eadt, ngo\u1ea1i ng\u1eef", "shape": "dot"}, {"color": "#97c2fc", "id": "\u0110o\u00e0n - H\u1ed9i khoa C\u00f4ng ngh\u1ec7 h\u00f3a h\u1ecdc v\u00e0 Th\u1ef1c ph\u1ea9m", "label": "\u0110o\u00e0n - H\u1ed9i khoa C\u00f4ng ngh\u1ec7 h\u00f3a h\u1ecdc v\u00e0 Th\u1ef1c ph\u1ea9m", "shape": "dot"}, {"color": "#97c2fc", "id": "Nguy\u1ec5n Th\u1ecb Ng\u1ecdc H\u00e2n", "label": "Nguy\u1ec5n Th\u1ecb Ng\u1ecdc H\u00e2n", "shape": "dot"}, {"color": "#97c2fc", "id": "englishclubsff@gmail.com", "label": "englishclubsff@gmail.com", "shape": "dot"}, {"color": "#97c2fc", "id": "https://www.facebook.com/sffenglishclub", "label": "https://www.facebook.com/sffenglishclub", "shape": "dot"}, {"color": "#97c2fc", "id": "CLB TI\u1ebeNG ANH KHOA KINH T\u1ebe EFB (English For Business Club) EFB", "label": "CLB TI\u1ebeNG ANH KHOA KINH T\u1ebe EFB (English For Business Club) EFB", "shape": "dot"}, {"color": "#97c2fc", "id": "Will be the better not be the best", "label": "Will be the better not be the best", "shape": "dot"}, {"color": "#97c2fc", "id": "\u0110o\u00e0n - H\u1ed9i khoa Kinh t\u1ebf", "label": "\u0110o\u00e0n - H\u1ed9i khoa Kinh t\u1ebf", "shape": "dot"}, {"color": "#97c2fc", "id": "Nguy\u1ec5n Ho\u00e0ng Tu\u1ea5n", "label": "Nguy\u1ec5n Ho\u00e0ng Tu\u1ea5n", "shape": "dot"}, {"color": "#97c2fc", "id": "\u0110\u01a1n v\u1ecb qu\u1ea3n l\u00fd", "label": "\u0110\u01a1n v\u1ecb qu\u1ea3n l\u00fd", "shape": "dot"}, {"color": "#97c2fc", "id": "Ch\u1ee7 nhi\u1ec7m CLB", "label": "Ch\u1ee7 nhi\u1ec7m CLB", "shape": "dot"}, {"color": "#97c2fc", "id": "CLB TH\u1ec2 THAO \u0110I\u1ec6N T\u1eec PWF \u2013 CLB PWF GAMING", "label": "CLB TH\u1ec2 THAO \u0110I\u1ec6N T\u1eec PWF \u2013 CLB PWF GAMING", "shape": "dot"}, {"color": "#97c2fc", "id": "PWF- K\u1ebft n\u1ed1i \u0111am m\u00ea, chinh ph\u1ee5c th\u1eed th\u00e1ch", "label": "PWF- K\u1ebft n\u1ed1i \u0111am m\u00ea, chinh ph\u1ee5c th\u1eed th\u00e1ch", "shape": "dot"}, {"color": "#97c2fc", "id": "Th\u1ec3 thao \u0111i\u1ec7n t\u1eed", "label": "Th\u1ec3 thao \u0111i\u1ec7n t\u1eed", "shape": "dot"}, {"color": "#97c2fc", "id": "Ph\u00f2ng C\u00f4ng t\u00e1c Sinh vi\u00ean", "label": "Ph\u00f2ng C\u00f4ng t\u00e1c Sinh vi\u00ean", "shape": "dot"}, {"color": "#97c2fc", "id": "Nguy\u1ec5n V\u00f5 H\u1ea3i Tri\u1ec1u", "label": "Nguy\u1ec5n V\u00f5 H\u1ea3i Tri\u1ec1u", "shape": "dot"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Tr\u01b0\u1eddng \u0110\u1ea1i h\u1ecdc N\u00f4ng L\u00e2m TP.HCM", "label": "c\u00f3", "to": "CLB, \u0111\u1ed9i, nh\u00f3m c\u1ea5p Tr\u01b0\u1eddng"}, {"arrows": "to", "from": "Tr\u01b0\u1eddng \u0110\u1ea1i h\u1ecdc N\u00f4ng L\u00e2m TP.HCM", "label": "c\u00f3", "to": "CLB, \u0111\u1ed9i, nh\u00f3m c\u1ea5p Khoa"}, {"arrows": "to", "from": "CLB, \u0111\u1ed9i, nh\u00f3m", "label": "thu\u1ed9c c\u00e1c l\u0129nh v\u1ef1c", "to": "h\u1ecdc thu\u1eadt, k\u1ef9 n\u0103ng, v\u0103n h\u00f3a, ngh\u1ec7 thu\u1eadt, th\u1ec3 thao"}, {"arrows": "to", "from": "sinh vi\u00ean", "label": "tham gia", "to": "CLB, \u0110\u1ed9i, Nh\u00f3m"}, {"arrows": "to", "from": "CLB, \u0110\u1ed9i, Nh\u00f3m", "label": "t\u1ed5 ch\u1ee9c", "to": "tuy\u1ec3n t\u00e2n th\u00e0nh vi\u00ean"}, {"arrows": "to", "from": "CLB C\u00c1N B\u1ed8 \u0110O\u00c0N NG\u00d4I SAO XANH", "label": "c\u00f3 slogan", "to": "D\u00e1m ngh\u0129 - bi\u1ebft l\u00e0m - d\u00e1m h\u00e0nh \u0111\u1ed9ng"}, {"arrows": "to", "from": "CLB C\u00c1N B\u1ed8 \u0110O\u00c0N NG\u00d4I SAO XANH", "label": "l\u0129nh v\u1ef1c ho\u1ea1t \u0111\u1ed9ng", "to": "\u0110\u00e0o t\u1ea1o l\u1ef1c l\u01b0\u1ee3ng C\u00e1n b\u1ed9 \u0110o\u00e0n\u2013H\u1ed9i"}, {"arrows": "to", "from": "CLB C\u00c1N B\u1ed8 \u0110O\u00c0N NG\u00d4I SAO XANH", "label": "has slogan", "to": "D\u00e1m ngh\u0129 - bi\u1ebft l\u00e0m - d\u00e1m h\u00e0nh \u0111\u1ed9ng"}, {"arrows": "to", "from": "CLB C\u00c1N B\u1ed8 \u0110O\u00c0N NG\u00d4I SAO XANH", "label": "ho\u1ea1t \u0111\u1ed9ng in l\u0129nh v\u1ef1c", "to": "\u0110\u00e0o t\u1ea1o l\u1ef1c l\u01b0\u1ee3ng C\u00e1n b\u1ed9 \u0110o\u00e0n\u2013H\u1ed9i"}, {"arrows": "to", "from": "CLB C\u00c1N B\u1ed8 \u0110O\u00c0N NG\u00d4I SAO XANH", "label": "\u0111\u01a1n v\u1ecb qu\u1ea3n l\u00fd", "to": "\u0110o\u00e0n Thanh ni\u00ean"}, {"arrows": "to", "from": "CLB C\u00c1N B\u1ed8 \u0110O\u00c0N NG\u00d4I SAO XANH", "label": "ch\u1ee7 nhi\u1ec7m CLB", "to": "H\u1ed3 Th\u1ecb Thanh H\u1ed3ng"}, {"arrows": "to", "from": "CLB C\u00c1N B\u1ed8 \u0110O\u00c0N NG\u00d4I SAO XANH", "label": "email", "to": "clbdoanngoisaoxanh@hcmuaf.edu.vn"}, {"arrows": "to", "from": "CLB C\u00c1N B\u1ed8 \u0110O\u00c0N NG\u00d4I SAO XANH", "label": "fanpage", "to": "https://www.facebook.com/ClbCanBoDoanNgoiSaoXanh"}, {"arrows": "to", "from": "BEC ENGLISH CLUB", "label": "has slogan", "to": "One benefit/One Energy/One Chance BEC"}, {"arrows": "to", "from": "BEC ENGLISH CLUB", "label": "ho\u1ea1t \u0111\u1ed9ng in l\u0129nh v\u1ef1c", "to": "H\u1ecdc thu\u1eadt"}, {"arrows": "to", "from": "BEC ENGLISH CLUB", "label": "\u0111\u01a1n v\u1ecb qu\u1ea3n l\u00fd", "to": "\u0110o\u00e0n\u2013H\u1ed9i khoa Khoa h\u1ecdc sinh h\u1ecdc"}, {"arrows": "to", "from": "BEC ENGLISH CLUB", "label": "ch\u1ee7 nhi\u1ec7m CLB", "to": "Nguy\u1ec5n L\u00ea Thanh Vy"}, {"arrows": "to", "from": "BEC ENGLISH CLUB", "label": "email", "to": "bec@tuoitrenonglam.com"}, {"arrows": "to", "from": "BEC ENGLISH CLUB", "label": "fanpage", "to": "https://www.facebook.com/BioEnglishClub"}, {"arrows": "to", "from": "CLB B\u00d3NG R\u1ed4 \u0110\u1ea0I H\u1eccC N\u00d4NG L\u00c2M", "label": "has slogan", "to": "1 2 3 N\u00f4ng L\u00e2m (x3)"}, {"arrows": "to", "from": "CLB B\u00d3NG R\u1ed4 \u0110\u1ea0I H\u1eccC N\u00d4NG L\u00c2M", "label": "ho\u1ea1t \u0111\u1ed9ng in l\u0129nh v\u1ef1c", "to": "Th\u1ec3 thao"}, {"arrows": "to", "from": "CLB B\u00d3NG R\u1ed4 \u0110\u1ea0I H\u1eccC N\u00d4NG L\u00c2M", "label": "\u0111\u01a1n v\u1ecb qu\u1ea3n l\u00fd", "to": "H\u1ed9i th\u1ec3 thao"}, {"arrows": "to", "from": "CLB B\u00d3NG R\u1ed4", "label": "L\u0129nh v\u1ef1c ho\u1ea1t \u0111\u1ed9ng", "to": "Th\u1ec3 thao"}, {"arrows": "to", "from": "CLB B\u00d3NG R\u1ed4", "label": "\u0110\u01a1n v\u1ecb qu\u1ea3n l\u00fd", "to": "H\u1ed9i th\u1ec3 thao"}, {"arrows": "to", "from": "CLB B\u00d3NG R\u1ed4", "label": "Ch\u1ee7 nhi\u1ec7m CLB", "to": "H\u1ed3 Thanh T\u00fa"}, {"arrows": "to", "from": "CLB B\u00d3NG R\u1ed4", "label": "Email", "to": "hothanhtusbb11@gmail.com"}, {"arrows": "to", "from": "CLB B\u00d3NG R\u1ed4", "label": "Fanpage", "to": "https://www.facebook.com/NLUBASKETBALL"}, {"arrows": "to", "from": "CLB DU L\u1ecaCH SINH TH\u00c1I", "label": "Slogan", "to": "K\u1ebft n\u1ed1i \u0111am m\u00ea"}, {"arrows": "to", "from": "CLB DU L\u1ecaCH SINH TH\u00c1I", "label": "L\u0129nh v\u1ef1c ho\u1ea1t \u0111\u1ed9ng", "to": "H\u1ecdc thu\u1eadt, b\u1ea3o v\u1ec7 m\u00f4i tr\u01b0\u1eddng, ho\u1ea1t \u0111\u1ed9ng thi\u1ec7n nguy\u1ec7n x\u00e3 h\u1ed9i"}, {"arrows": "to", "from": "CLB DU L\u1ecaCH SINH TH\u00c1I", "label": "\u0110\u01a1n v\u1ecb qu\u1ea3n l\u00fd", "to": "\u0110o\u00e0n\u2013H\u1ed9i khoa M\u00f4i tr\u01b0\u1eddng \u2013 T\u00e0i nguy\u00ean"}, {"arrows": "to", "from": "CLB DU L\u1ecaCH SINH TH\u00c1I", "label": "Ch\u1ee7 nhi\u1ec7m CLB", "to": "Tr\u1ea7n L\u00ea Hi\u1ebfu"}, {"arrows": "to", "from": "CLB DU L\u1ecaCH SINH TH\u00c1I", "label": "Emlail", "to": "dlst@tuoitrenonglam.com"}, {"arrows": "to", "from": "CLB DU L\u1ecaCH SINH TH\u00c1I", "label": "Fanpage", "to": "https://www.facebook.com/dlst.info"}, {"arrows": "to", "from": "CLB D\u01af\u1ee2C TH\u00da Y", "label": "Slogan", "to": "H\u1ecdc t\u1eadp \u2013 Chia s\u1ebb - Nghi\u00ean c\u1ee9u \u2013 S\u00e1ng t\u1ea1o"}, {"arrows": "to", "from": "CLB D\u01af\u1ee2C TH\u00da Y", "label": "L\u0129nh v\u1ef1c ho\u1ea1t \u0111\u1ed9ng", "to": "H\u1ecdc thu\u1eadt, Nghi\u00ean c\u1ee9u khoa h\u1ecdc"}, {"arrows": "to", "from": "CLB D\u01af\u1ee2C TH\u00da Y", "label": "slogan", "to": "H\u1ecdc t\u1eadp \u2013 Chia s\u1ebb - Nghi\u00ean c\u1ee9u \u2013 S\u00e1ng t\u1ea1o"}, {"arrows": "to", "from": "CLB D\u01af\u1ee2C TH\u00da Y", "label": "l\u0129nh v\u1ef1c ho\u1ea1t \u0111\u1ed9ng", "to": "H\u1ecdc thu\u1eadt, Nghi\u00ean c\u1ee9u khoa h\u1ecdc"}, {"arrows": "to", "from": "CLB D\u01af\u1ee2C TH\u00da Y", "label": "\u0111\u01a1n v\u1ecb qu\u1ea3n l\u00fd", "to": "\u0110o\u00e0n \u2013 H\u1ed9i khoa Ch\u0103n nu\u00f4i Th\u00fa y"}, {"arrows": "to", "from": "Nguy\u1ec5n N\u1eef Mai Th\u01a1", "label": "is the head of", "to": "C\u00e2u l\u1ea1c b\u1ed9 D\u01b0\u1ee3c Th\u00fa Y"}, {"arrows": "to", "from": "C\u00e2u l\u1ea1c b\u1ed9 D\u01b0\u1ee3c Th\u00fa Y", "label": "has email", "to": "duocthuynlu@gmail.com"}, {"arrows": "to", "from": "Ph\u1ea1m Ch\u00ed Bi\u1ebft", "label": "is the head of", "to": "CLB \u0110\u1ed2NG H\u00c0NH \u2013 AC"}, {"arrows": "to", "from": "CLB \u0110\u1ed2NG H\u00c0NH \u2013 AC", "label": "has slogan", "to": "\u0110\u1ed3ng h\u00e0nh AC - \u0110\u1ed3ng h\u00e0nh c\u00f9ng sinh vi\u00ean"}, {"arrows": "to", "from": "CLB \u0110\u1ed2NG H\u00c0NH \u2013 AC", "label": "has email", "to": "ac@tuoitrenonglam.com"}, {"arrows": "to", "from": "CLB \u0110\u1ed2NG H\u00c0NH \u2013 AC", "label": "has fanpage", "to": "https://www.facebook.com/clbdonghanh.ac"}, {"arrows": "to", "from": "CLB \u0110\u1ed2NG H\u00c0NH \u2013 AC", "label": "is managed by", "to": "\u0110o\u00e0n Thanh ni\u00ean"}, {"arrows": "to", "from": "Nguy\u1ec5n Ho\u00e0ng Nam Ph\u01b0\u01a1ng", "label": "is the head of", "to": "FIRE ENGLISH CLUB"}, {"arrows": "to", "from": "FIRE ENGLISH CLUB", "label": "has slogan", "to": "We are FIRE \u2013 FIRE KH\u00d4NG PHAI M\u1edc"}, {"arrows": "to", "from": "FIRE ENGLISH CLUB", "label": "has email", "to": "fireenglishclub@tuoitrenonglam.com"}, {"arrows": "to", "from": "FIRE ENGLISH CLUB", "label": "has fanpage", "to": "https://www.facebook.com/FiRE.EnglishClub"}, {"arrows": "to", "from": "FIRE ENGLISH CLUB", "label": "is managed by", "to": "\u0110o\u00e0n\u2013H\u1ed9i khoa Ngo\u1ea1i ng\u1eef\u2013S\u01b0 ph\u1ea1m"}, {"arrows": "to", "from": "CLB FiRE English", "label": "Ch\u1ee7 nhi\u1ec7m CLB", "to": "Nguy\u1ec5n Ho\u00e0ng Nam Ph\u01b0\u01a1ng"}, {"arrows": "to", "from": "CLB FiRE English", "label": "Email", "to": "fireenglishclub@tuoitrenonglam.com"}, {"arrows": "to", "from": "CLB FiRE English", "label": "Fanpage", "to": "https://www.facebook.com/FiRE.EnglishClub"}, {"arrows": "to", "from": "CLB H\u1eccC THU\u1eacT\u2013K\u1ef8 N\u0102NG QU\u1ea2N TR\u1eca (B.A.S)", "label": "Slogan", "to": "B.A.S \u0111\u1ebfn v\u1edbi nhau b\u1eb1ng nhi\u1ec7t huy\u1ebft, \u1edf l\u1ea1i v\u1edbi nhau b\u1eb1ng t\u00ecnh c\u1ea3m!"}, {"arrows": "to", "from": "CLB H\u1eccC THU\u1eacT\u2013K\u1ef8 N\u0102NG QU\u1ea2N TR\u1eca (B.A.S)", "label": "L\u0129nh v\u1ef1c ho\u1ea1t \u0111\u1ed9ng", "to": "K\u1ef9 n\u0103ng, th\u1ec3 thao, t\u00ecnh nguy\u1ec7n, h\u1ecdc thu\u1eadt, v\u0103n ngh\u1ec7, truy\u1ec1n th\u00f4ng"}, {"arrows": "to", "from": "CLB H\u1eccC THU\u1eacT\u2013K\u1ef8 N\u0102NG QU\u1ea2N TR\u1eca (B.A.S)", "label": "\u0110\u01a1n v\u1ecb qu\u1ea3n l\u00fd", "to": "Ph\u00f2ng C\u00f4ng t\u00e1c sinh vi\u00ean"}, {"arrows": "to", "from": "CLB H\u1eccC THU\u1eacT\u2013K\u1ef8 N\u0102NG QU\u1ea2N TR\u1eca (B.A.S)", "label": "Ch\u1ee7 nhi\u1ec7m CLB", "to": "V\u00f5 L\u00ea B\u00e1ch"}, {"arrows": "to", "from": "CLB H\u1eccC THU\u1eacT\u2013K\u1ef8 N\u0102NG QU\u1ea2N TR\u1eca (B.A.S)", "label": "Email", "to": "caulacbo.b.a.s@gmail.com"}, {"arrows": "to", "from": "CLB H\u1eccC THU\u1eacT\u2013K\u1ef8 N\u0102NG QU\u1ea2N TR\u1eca (B.A.S)", "label": "Fanpage", "to": "https://www.facebook.com/CLB.B.A.S"}, {"arrows": "to", "from": "CLB KARATE-DO", "label": "Slogan", "to": "R\u00e8n luy\u1ec7n tinh th\u1ea7n v\u00e0 th\u1ec3 l\u1ef1c \u0111\u1ec3 v\u1eefng b\u01b0\u1edbc cho t\u01b0\u01a1ng lai."}, {"arrows": "to", "from": "CLB KARATE-DO", "label": "L\u0129nh v\u1ef1c ho\u1ea1t \u0111\u1ed9ng", "to": "Th\u1ec3 thao"}, {"arrows": "to", "from": "CLB KARATE-DO", "label": "\u0110\u01a1n v\u1ecb qu\u1ea3n l\u00fd", "to": "H\u1ed9i th\u1ec3 thao"}, {"arrows": "to", "from": "CLB KARATE-DO", "label": "Ch\u1ee7 nhi\u1ec7m CLB", "to": "L\u00ea Quang Tr\u00ed"}, {"arrows": "to", "from": "Kiai", "label": "L\u0129nh v\u1ef1c ho\u1ea1t \u0111\u1ed9ng", "to": "Th\u1ec3 thao"}, {"arrows": "to", "from": "Kiai", "label": "\u0110\u01a1n v\u1ecb qu\u1ea3n l\u00fd", "to": "H\u1ed9i th\u1ec3 thao"}, {"arrows": "to", "from": "Kiai", "label": "Ch\u1ee7 nhi\u1ec7m CLB", "to": "L\u00ea Quang Tr\u00ed"}, {"arrows": "to", "from": "Kiai", "label": "Email", "to": "Lequangtri@hcmuaf.edu.vn"}, {"arrows": "to", "from": "Kiai", "label": "Fanpage", "to": "https://www.facebook.com/groups/308034235884043"}, {"arrows": "to", "from": "CLB K\u1ebeT N\u1ed0I TH\u00c0NH C\u00d4NG", "label": "Slogan", "to": "\u0110\u1ed3ng h\u00e0nh c\u00f9ng sinh vi\u00ean!"}, {"arrows": "to", "from": "CLB K\u1ebeT N\u1ed0I TH\u00c0NH C\u00d4NG", "label": "L\u0129nh v\u1ef1c ho\u1ea1t \u0111\u1ed9ng", "to": "Trang b\u1ecb k\u1ef9 n\u0103ng m\u1ec1m, ho\u1ea1t \u0111\u1ed9ng t\u00ecnh nguy\u1ec7n x\u00e3 h\u1ed9i"}, {"arrows": "to", "from": "CLB K\u1ebeT N\u1ed0I TH\u00c0NH C\u00d4NG", "label": "\u0110\u01a1n v\u1ecb qu\u1ea3n l\u00fd", "to": "Trung t\u00e2m H\u1ed7 tr\u1ee3 Sinh vi\u00ean \u0026 Quan h\u1ec7 Doanh nghi\u1ec7p"}, {"arrows": "to", "from": "CLB K\u1ebeT N\u1ed0I TH\u00c0NH C\u00d4NG", "label": "Ch\u1ee7 nhi\u1ec7m CLB", "to": "D\u01b0\u01a1ng Tri\u1ec7u Duy"}, {"arrows": "to", "from": "CLB K\u1ebeT N\u1ed0I TH\u00c0NH C\u00d4NG", "label": "Email", "to": "clbketnoithanhcong10@gmail.com"}, {"arrows": "to", "from": "CLB K\u1ebeT N\u1ed0I TH\u00c0NH C\u00d4NG", "label": "Fanpage", "to": "https://www.facebook.com/clbkntc"}, {"arrows": "to", "from": "CLB KH\u1edeI NGHI\u1ec6P (NLU STARTUP CLUB) NSC", "label": "Slogan", "to": "\u01af\u01a1m m\u1ea7m \u00fd t\u01b0\u1edfng \u2013 V\u1eefng b\u01b0\u1edbc th\u00e0nh c\u00f4ng"}, {"arrows": "to", "from": "CLB KH\u1edeI NGHI\u1ec6P (NLU STARTUP CLUB) NSC", "label": "L\u0129nh v\u1ef1c ho\u1ea1t \u0111\u1ed9ng", "to": "Kh\u1edfi nghi\u1ec7p, Nghi\u00ean c\u1ee9u khoa h\u1ecdc, H\u1ecdc thu\u1eadt, T\u00ecnh nguy\u1ec7n x\u00e3 h\u1ed9i"}, {"arrows": "to", "from": "\u01af\u01a1m m\u1ea7m \u00fd t\u01b0\u1edfng", "label": "L\u0129nh v\u1ef1c ho\u1ea1t \u0111\u1ed9ng", "to": "Kh\u1edfi nghi\u1ec7p, Nghi\u00ean c\u1ee9u khoa h\u1ecdc, H\u1ecdc thu\u1eadt, T\u00ecnh nguy\u1ec7n x\u00e3 h\u1ed9i"}, {"arrows": "to", "from": "NLU", "label": "\u0111\u1ecbnh h\u01b0\u1edbng", "to": "tr\u01b0\u1eddng \u0111\u1ea1i h\u1ecdc nghi\u00ean c\u1ee9u"}, {"arrows": "to", "from": "Trung t\u00e2m \u01af\u01a1m t\u1ea1o Doanh nghi\u1ec7p c\u00f4ng ngh\u1ec7", "label": "l\u00e0 \u0111\u01a1n v\u1ecb qu\u1ea3n l\u00fd c\u1ee7a", "to": "CLB Kh\u1edfi nghi\u1ec7p N\u00f4ng L\u00e2m"}, {"arrows": "to", "from": "Tr\u1ea7n Ph\u1ea1m M\u1ef9 Duy\u00ean", "label": "l\u00e0 ch\u1ee7 nhi\u1ec7m c\u1ee7a", "to": "CLB Kh\u1edfi nghi\u1ec7p N\u00f4ng L\u00e2m"}, {"arrows": "to", "from": "CLB M\u1ed9t S\u1ee9c Kh\u1ecfe TP.HCM", "label": "l\u0129nh v\u1ef1c ho\u1ea1t \u0111\u1ed9ng", "to": "H\u1ecdc thu\u1eadt"}, {"arrows": "to", "from": "\u0110o\u00e0n - H\u1ed9i khoa Ch\u0103n nu\u00f4i Th\u00fa y", "label": "l\u00e0 \u0111\u01a1n v\u1ecb qu\u1ea3n l\u00fd c\u1ee7a", "to": "CLB M\u1ed9t S\u1ee9c Kh\u1ecfe TP.HCM"}, {"arrows": "to", "from": "Vo\u0303 Minh Tr\u01b0\u01a1\u0300ng", "label": "l\u00e0 ch\u1ee7 nhi\u1ec7m c\u1ee7a", "to": "CLB M\u1ed9t S\u1ee9c Kh\u1ecfe TP.HCM"}, {"arrows": "to", "from": "CLB S\u00e1ch v\u00e0 H\u00e0nh \u0111\u1ed9ng N\u00f4ng L\u00e2m TP.HCM", "label": "l\u0129nh v\u1ef1c ho\u1ea1t \u0111\u1ed9ng", "to": "H\u1ecdc thu\u1eadt, truy\u1ec1n th\u00f4ng, s\u00e1ch"}, {"arrows": "to", "from": "Th\u01b0 vi\u1ec7n", "label": "l\u00e0 \u0111\u01a1n v\u1ecb qu\u1ea3n l\u00fd c\u1ee7a", "to": "CLB S\u00e1ch v\u00e0 H\u00e0nh \u0111\u1ed9ng N\u00f4ng L\u00e2m TP.HCM"}, {"arrows": "to", "from": "Ph\u1ea1m Th\u1ecb Huy\u00ean", "label": "l\u00e0 ch\u1ee7 nhi\u1ec7m c\u1ee7a", "to": "CLB S\u00e1ch v\u00e0 H\u00e0nh \u0111\u1ed9ng N\u00f4ng L\u00e2m TP.HCM"}, {"arrows": "to", "from": "CLB S\u00c1CH V\u00c0 H\u00c0NH \u0110\u1ed8NG", "label": "\u0110\u01a1n v\u1ecb qu\u1ea3n l\u00fd", "to": "Th\u01b0 vi\u1ec7n"}, {"arrows": "to", "from": "CLB S\u00c1CH V\u00c0 H\u00c0NH \u0110\u1ed8NG", "label": "Ch\u1ee7 nhi\u1ec7m CLB", "to": "Ph\u1ea1m Th\u1ecb Huy\u00ean"}, {"arrows": "to", "from": "CLB S\u00c1CH V\u00c0 H\u00c0NH \u0110\u1ed8NG", "label": "Email", "to": "sachvahanhdong@tuoitrenonglam.com"}, {"arrows": "to", "from": "CLB S\u00c1CH V\u00c0 H\u00c0NH \u0110\u1ed8NG", "label": "Fanpage", "to": "https://www.facebook.com/clbsvhdnlu"}, {"arrows": "to", "from": "CLB TI\u1ebeNG ANH KHOA C\u00d4NG NGH\u1ec6 H\u00d3A H\u1eccC V\u00c0 TH\u1ef0C PH\u1ea8M (Seeds For Future) SFF", "label": "L\u0129nh v\u1ef1c ho\u1ea1t \u0111\u1ed9ng", "to": "H\u1ecdc thu\u1eadt, ngo\u1ea1i ng\u1eef"}, {"arrows": "to", "from": "CLB TI\u1ebeNG ANH KHOA C\u00d4NG NGH\u1ec6 H\u00d3A H\u1eccC V\u00c0 TH\u1ef0C PH\u1ea8M (Seeds For Future) SFF", "label": "\u0110\u01a1n v\u1ecb qu\u1ea3n l\u00fd", "to": "\u0110o\u00e0n - H\u1ed9i khoa C\u00f4ng ngh\u1ec7 h\u00f3a h\u1ecdc v\u00e0 Th\u1ef1c ph\u1ea9m"}, {"arrows": "to", "from": "CLB TI\u1ebeNG ANH KHOA C\u00d4NG NGH\u1ec6 H\u00d3A H\u1eccC V\u00c0 TH\u1ef0C PH\u1ea8M (Seeds For Future) SFF", "label": "Ch\u1ee7 nhi\u1ec7m CLB", "to": "Nguy\u1ec5n Th\u1ecb Ng\u1ecdc H\u00e2n"}, {"arrows": "to", "from": "CLB TI\u1ebeNG ANH KHOA C\u00d4NG NGH\u1ec6 H\u00d3A H\u1eccC V\u00c0 TH\u1ef0C PH\u1ea8M (Seeds For Future) SFF", "label": "Email", "to": "englishclubsff@gmail.com"}, {"arrows": "to", "from": "CLB TI\u1ebeNG ANH KHOA C\u00d4NG NGH\u1ec6 H\u00d3A H\u1eccC V\u00c0 TH\u1ef0C PH\u1ea8M (Seeds For Future) SFF", "label": "Fanpage", "to": "https://www.facebook.com/sffenglishclub"}, {"arrows": "to", "from": "CLB TI\u1ebeNG ANH KHOA KINH T\u1ebe EFB (English For Business Club) EFB", "label": "L\u0129nh v\u1ef1c ho\u1ea1t \u0111\u1ed9ng", "to": "H\u1ecdc thu\u1eadt, ngo\u1ea1i ng\u1eef"}, {"arrows": "to", "from": "CLB TI\u1ebeNG ANH KHOA KINH T\u1ebe EFB (English For Business Club) EFB", "label": "Slogan", "to": "Will be the better not be the best"}, {"arrows": "to", "from": "CLB TI\u1ebeNG ANH KHOA KINH T\u1ebe EFB (English For Business Club) EFB", "label": "\u0110\u01a1n v\u1ecb qu\u1ea3n l\u00fd", "to": "\u0110o\u00e0n - H\u1ed9i khoa Kinh t\u1ebf"}, {"arrows": "to", "from": "CLB TI\u1ebeNG ANH KHOA KINH T\u1ebe EFB (English For Business Club) EFB", "label": "Ch\u1ee7 nhi\u1ec7m CLB", "to": "Nguy\u1ec5n Ho\u00e0ng Tu\u1ea5n"}, {"arrows": "to", "from": "\u0110o\u00e0n - H\u1ed9i khoa Kinh t\u1ebf", "label": "is a", "to": "\u0110\u01a1n v\u1ecb qu\u1ea3n l\u00fd"}, {"arrows": "to", "from": "Nguy\u1ec5n Ho\u00e0ng Tu\u1ea5n", "label": "is a", "to": "Ch\u1ee7 nhi\u1ec7m CLB"}, {"arrows": "to", "from": "CLB TH\u1ec2 THAO \u0110I\u1ec6N T\u1eec PWF \u2013 CLB PWF GAMING", "label": "has slogan", "to": "PWF- K\u1ebft n\u1ed1i \u0111am m\u00ea, chinh ph\u1ee5c th\u1eed th\u00e1ch"}, {"arrows": "to", "from": "CLB TH\u1ec2 THAO \u0110I\u1ec6N T\u1eec PWF \u2013 CLB PWF GAMING", "label": "ho\u1ea1t \u0111\u1ed9ng trong l\u0129nh v\u1ef1c", "to": "Th\u1ec3 thao \u0111i\u1ec7n t\u1eed"}, {"arrows": "to", "from": "Ph\u00f2ng C\u00f4ng t\u00e1c Sinh vi\u00ean", "label": "is a", "to": "\u0110\u01a1n v\u1ecb qu\u1ea3n l\u00fd"}, {"arrows": "to", "from": "Nguy\u1ec5n V\u00f5 H\u1ea3i Tri\u1ec1u", "label": "is a", "to": "Ch\u1ee7 nhi\u1ec7m CLB"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "repulsion": {
+            "centralGravity": 0.2,
+            "damping": 0.09,
+            "nodeDistance": 200,
+            "springConstant": 0.05,
+            "springLength": 200
+        },
+        "solver": "repulsion",
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+                      network.on("stabilizationProgress", function(params) {
+                          document.getElementById('loadingBar').removeAttribute("style");
+                          var maxWidth = 496;
+                          var minWidth = 20;
+                          var widthFactor = params.iterations/params.total;
+                          var width = Math.max(minWidth,maxWidth * widthFactor);
+                          document.getElementById('bar').style.width = width + 'px';
+                          document.getElementById('text').innerHTML = Math.round(widthFactor*100) + '%';
+                      });
+                      network.once("stabilizationIterationsDone", function() {
+                          document.getElementById('text').innerHTML = '100%';
+                          document.getElementById('bar').style.width = '496px';
+                          document.getElementById('loadingBar').style.opacity = 0;
+                          // really clean the dom element
+                          setTimeout(function () {document.getElementById('loadingBar').style.display = 'none';}, 500);
+                      });
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

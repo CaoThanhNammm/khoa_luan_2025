@@ -1,0 +1,258 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: auto;
+                 height: 700px;
+                 background-color: #eeeeee;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+             #loadingBar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width: auto;
+                 height: 700px;
+                 background-color:rgba(200,200,200,0.8);
+                 -webkit-transition: all 0.5s ease;
+                 -moz-transition: all 0.5s ease;
+                 -ms-transition: all 0.5s ease;
+                 -o-transition: all 0.5s ease;
+                 transition: all 0.5s ease;
+                 opacity:1;
+             }
+
+             #bar {
+                 position:absolute;
+                 top:0px;
+                 left:0px;
+                 width:20px;
+                 height:20px;
+                 margin:auto auto auto auto;
+                 border-radius:11px;
+                 border:2px solid rgba(30,30,30,0.05);
+                 background: rgb(0, 173, 246); /* Old browsers */
+                 box-shadow: 2px 0px 4px rgba(0,0,0,0.4);
+             }
+
+             #border {
+                 position:absolute;
+                 top:10px;
+                 left:10px;
+                 width:500px;
+                 height:23px;
+                 margin:auto auto auto auto;
+                 box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
+                 border-radius:10px;
+             }
+
+             #text {
+                 position:absolute;
+                 top:8px;
+                 left:530px;
+                 width:30px;
+                 height:50px;
+                 margin:auto auto auto auto;
+                 font-size:22px;
+                 color: #000000;
+             }
+
+             div.outerBorder {
+                 position:relative;
+                 top:400px;
+                 width:600px;
+                 height:44px;
+                 margin:auto auto auto auto;
+                 border:8px solid rgba(0,0,0,0.1);
+                 background: rgb(252,252,252); /* Old browsers */
+                 background: -moz-linear-gradient(top,  rgba(252,252,252,1) 0%, rgba(237,237,237,1) 100%); /* FF3.6+ */
+                 background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(252,252,252,1)), color-stop(100%,rgba(237,237,237,1))); /* Chrome,Safari4+ */
+                 background: -webkit-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Chrome10+,Safari5.1+ */
+                 background: -o-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Opera 11.10+ */
+                 background: -ms-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* IE10+ */
+                 background: linear-gradient(to bottom,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* W3C */
+                 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+                 border-radius:72px;
+                 box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+             }
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+            <div id="loadingBar">
+              <div class="outerBorder">
+                <div id="text">0%</div>
+                <div id="border">
+                  <div id="bar"></div>
+                </div>
+              </div>
+            </div>
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#97c2fc", "id": "Ph\u00f2ng \u0110\u00e0o t\u1ea1o", "label": "Ph\u00f2ng \u0110\u00e0o t\u1ea1o", "shape": "dot"}, {"color": "#97c2fc", "id": "sinh vi\u00ean nh\u1eefng h\u1ecdc ph\u1ea7n s\u1ebd \u0111\u01b0\u1ee3c gi\u1ea3ng d\u1ea1y trong h\u1ecdc k\u1ef3 ti\u1ebfp theo", "label": "sinh vi\u00ean nh\u1eefng h\u1ecdc ph\u1ea7n s\u1ebd \u0111\u01b0\u1ee3c gi\u1ea3ng d\u1ea1y trong h\u1ecdc k\u1ef3 ti\u1ebfp theo", "shape": "dot"}, {"color": "#97c2fc", "id": "TKB c\u1ee7a t\u1eebng h\u1ecdc ph\u1ea7n", "label": "TKB c\u1ee7a t\u1eebng h\u1ecdc ph\u1ea7n", "shape": "dot"}, {"color": "#97c2fc", "id": "Sinh vi\u00ean", "label": "Sinh vi\u00ean", "shape": "dot"}, {"color": "#97c2fc", "id": "l\u1edbp h\u1ecdc ph\u1ea7n s\u1ebd th\u1ef1c hi\u1ec7n trong h\u1ecdc k\u1ef3 ti\u1ebfp theo", "label": "l\u1edbp h\u1ecdc ph\u1ea7n s\u1ebd th\u1ef1c hi\u1ec7n trong h\u1ecdc k\u1ef3 ti\u1ebfp theo", "shape": "dot"}, {"color": "#97c2fc", "id": "sinh vi\u00ean \u0111\u0103ng k\u00fd l\u1edbp h\u1ecdc ph\u1ea7n", "label": "sinh vi\u00ean \u0111\u0103ng k\u00fd l\u1edbp h\u1ecdc ph\u1ea7n", "shape": "dot"}, {"color": "#97c2fc", "id": "danh s\u00e1ch c\u00e1c l\u1edbp h\u1ecdc ph\u1ea7n", "label": "danh s\u00e1ch c\u00e1c l\u1edbp h\u1ecdc ph\u1ea7n", "shape": "dot"}, {"color": "#97c2fc", "id": "\u00edt nh\u1ea5t 01 tu\u1ea7n tr\u01b0\u1edbc khi b\u1eaft \u0111\u1ea7u h\u1ecdc k\u1ef3", "label": "\u00edt nh\u1ea5t 01 tu\u1ea7n tr\u01b0\u1edbc khi b\u1eaft \u0111\u1ea7u h\u1ecdc k\u1ef3", "shape": "dot"}, {"color": "#97c2fc", "id": "sinh vi\u00ean", "label": "sinh vi\u00ean", "shape": "dot"}, {"color": "#97c2fc", "id": "h\u1ecdc ph\u1ea7n theo k\u1ebf ho\u1ea1ch chung c\u1ee7a tr\u01b0\u1eddng", "label": "h\u1ecdc ph\u1ea7n theo k\u1ebf ho\u1ea1ch chung c\u1ee7a tr\u01b0\u1eddng", "shape": "dot"}, {"color": "#97c2fc", "id": "tr\u01b0\u1edbc khi h\u1ecdc k\u1ef3 m\u1edbi b\u1eaft \u0111\u1ea7u", "label": "tr\u01b0\u1edbc khi h\u1ecdc k\u1ef3 m\u1edbi b\u1eaft \u0111\u1ea7u", "shape": "dot"}, {"color": "#97c2fc", "id": "\u0111\u0103ng k\u00fd h\u1ecdc ph\u1ea7n", "label": "\u0111\u0103ng k\u00fd h\u1ecdc ph\u1ea7n", "shape": "dot"}, {"color": "#97c2fc", "id": "theo k\u1ebf ho\u1ea1ch chung c\u1ee7a tr\u01b0\u1eddng", "label": "theo k\u1ebf ho\u1ea1ch chung c\u1ee7a tr\u01b0\u1eddng", "shape": "dot"}, {"color": "#97c2fc", "id": "C\u00e1c h\u1ecdc ph\u1ea7n", "label": "C\u00e1c h\u1ecdc ph\u1ea7n", "shape": "dot"}, {"color": "#97c2fc", "id": "KHHT \u0111\u00e3 \u0111\u01b0\u1ee3c ph\u00ea duy\u1ec7t", "label": "KHHT \u0111\u00e3 \u0111\u01b0\u1ee3c ph\u00ea duy\u1ec7t", "shape": "dot"}, {"color": "#97c2fc", "id": "c\u00e1c l\u1edbp h\u1ecdc ph\u1ea7n", "label": "c\u00e1c l\u1edbp h\u1ecdc ph\u1ea7n", "shape": "dot"}, {"color": "#97c2fc", "id": "trong h\u1ecdc k\u1ef3 ti\u1ebfp theo", "label": "trong h\u1ecdc k\u1ef3 ti\u1ebfp theo", "shape": "dot"}, {"color": "#97c2fc", "id": "nh\u1eefng h\u1ecdc ph\u1ea7n m\u1edbi", "label": "nh\u1eefng h\u1ecdc ph\u1ea7n m\u1edbi", "shape": "dot"}, {"color": "#97c2fc", "id": "m\u1ed9t s\u1ed1 h\u1ecdc ph\u1ea7n ch\u01b0a \u0111\u1ea1t", "label": "m\u1ed9t s\u1ed1 h\u1ecdc ph\u1ea7n ch\u01b0a \u0111\u1ea1t", "shape": "dot"}, {"color": "#97c2fc", "id": "m\u1ed9t s\u1ed1 h\u1ecdc ph\u1ea7n \u0111\u00e3 \u0111\u1ea1t", "label": "m\u1ed9t s\u1ed1 h\u1ecdc ph\u1ea7n \u0111\u00e3 \u0111\u1ea1t", "shape": "dot"}, {"color": "#97c2fc", "id": "s\u1ed1 l\u01b0\u1ee3ng t\u00edn ch\u1ec9 sinh vi\u00ean", "label": "s\u1ed1 l\u01b0\u1ee3ng t\u00edn ch\u1ec9 sinh vi\u00ean", "shape": "dot"}, {"color": "#97c2fc", "id": "m\u1ed7i h\u1ecdc k\u1ef3", "label": "m\u1ed7i h\u1ecdc k\u1ef3", "shape": "dot"}, {"color": "#97c2fc", "id": "14 t\u00edn ch\u1ec9", "label": "14 t\u00edn ch\u1ec9", "shape": "dot"}, {"color": "#97c2fc", "id": "28 t\u00edn ch\u1ec9", "label": "28 t\u00edn ch\u1ec9", "shape": "dot"}, {"color": "#97c2fc", "id": "s\u1ed1 t\u00edn ch\u1ec9 t\u1ed1i \u0111a \u0111\u1ec3 r\u00fat ng\u1eafn th\u1eddi gian ho\u00e0n th\u00e0nh kh\u00f3a h\u1ecdc", "label": "s\u1ed1 t\u00edn ch\u1ec9 t\u1ed1i \u0111a \u0111\u1ec3 r\u00fat ng\u1eafn th\u1eddi gian ho\u00e0n th\u00e0nh kh\u00f3a h\u1ecdc", "shape": "dot"}, {"color": "#97c2fc", "id": "14 t\u00edn ch\u1ec9/h\u1ecdc k\u1ef3", "label": "14 t\u00edn ch\u1ec9/h\u1ecdc k\u1ef3", "shape": "dot"}, {"color": "#97c2fc", "id": "t\u1ef1 \u00fd b\u1ecf h\u1ecdc", "label": "t\u1ef1 \u00fd b\u1ecf h\u1ecdc", "shape": "dot"}, {"color": "#97c2fc", "id": "12 t\u00edn ch\u1ec9", "label": "12 t\u00edn ch\u1ec9", "shape": "dot"}, {"color": "#97c2fc", "id": "Tr\u01b0\u1eddng", "label": "Tr\u01b0\u1eddng", "shape": "dot"}, {"color": "#97c2fc", "id": "l\u1ecbch h\u1ecdc theo khung CT\u0110T ng\u00e0nh/ chuy\u00ean ng\u00e0nh", "label": "l\u1ecbch h\u1ecdc theo khung CT\u0110T ng\u00e0nh/ chuy\u00ean ng\u00e0nh", "shape": "dot"}, {"color": "#97c2fc", "id": "nh\u1eefng h\u1ecdc ph\u1ea7n, s\u1ed1 l\u1edbp h\u1ecdc ph\u1ea7n d\u1ef1 \u0111\u1ecbnh s\u1ebd m\u1edf trong h\u1ecdc k\u1ef3 ti\u1ebfp theo", "label": "nh\u1eefng h\u1ecdc ph\u1ea7n, s\u1ed1 l\u1edbp h\u1ecdc ph\u1ea7n d\u1ef1 \u0111\u1ecbnh s\u1ebd m\u1edf trong h\u1ecdc k\u1ef3 ti\u1ebfp theo", "shape": "dot"}, {"color": "#97c2fc", "id": "Khoa/B\u1ed9 m\u00f4n", "label": "Khoa/B\u1ed9 m\u00f4n", "shape": "dot"}, {"color": "#97c2fc", "id": "Khoa", "label": "Khoa", "shape": "dot"}, {"color": "#97c2fc", "id": "h\u1ee7y ho\u1eb7c m\u1edf th\u00eam h\u1ecdc ph\u1ea7n", "label": "h\u1ee7y ho\u1eb7c m\u1edf th\u00eam h\u1ecdc ph\u1ea7n", "shape": "dot"}, {"color": "#97c2fc", "id": "\u0111i\u1ec1u ch\u1ec9nh s\u1ed1 l\u1edbp h\u1ecdc ph\u1ea7n theo s\u1ed1 l\u01b0\u1ee3ng sinh vi\u00ean", "label": "\u0111i\u1ec1u ch\u1ec9nh s\u1ed1 l\u1edbp h\u1ecdc ph\u1ea7n theo s\u1ed1 l\u01b0\u1ee3ng sinh vi\u00ean", "shape": "dot"}, {"color": "#97c2fc", "id": "KHHT v\u00e0 TKB", "label": "KHHT v\u00e0 TKB", "shape": "dot"}, {"color": "#97c2fc", "id": "tr\u1ef1c tuy\u1ebfn l\u1edbp h\u1ecdc ph\u1ea7n", "label": "tr\u1ef1c tuy\u1ebfn l\u1edbp h\u1ecdc ph\u1ea7n", "shape": "dot"}, {"color": "#97c2fc", "id": "th\u1eddi kh\u00f3a bi\u1ec3u", "label": "th\u1eddi kh\u00f3a bi\u1ec3u", "shape": "dot"}, {"color": "#97c2fc", "id": "h\u1ecdc ph\u1ea7n \u0111\u00e3 \u0111\u0103ng k\u00fd", "label": "h\u1ecdc ph\u1ea7n \u0111\u00e3 \u0111\u0103ng k\u00fd", "shape": "dot"}, {"color": "#97c2fc", "id": "r\u00fat b\u1edbt h\u1ecdc ph\u1ea7n \u0111\u00e3 \u0111\u0103ng k\u00fd", "label": "r\u00fat b\u1edbt h\u1ecdc ph\u1ea7n \u0111\u00e3 \u0111\u0103ng k\u00fd", "shape": "dot"}, {"color": "#97c2fc", "id": "tr\u1ef1c ti\u1ebfp tr\u00ean website \u0111\u0103ng k\u00fd h\u1ecdc ph\u1ea7n", "label": "tr\u1ef1c ti\u1ebfp tr\u00ean website \u0111\u0103ng k\u00fd h\u1ecdc ph\u1ea7n", "shape": "dot"}, {"color": "#97c2fc", "id": "theo th\u1eddi gian quy \u0111\u1ecbnh c\u1ee5 th\u1ec3 c\u1ee7a t\u1eebng h\u1ecdc k\u1ef3", "label": "theo th\u1eddi gian quy \u0111\u1ecbnh c\u1ee5 th\u1ec3 c\u1ee7a t\u1eebng h\u1ecdc k\u1ef3", "shape": "dot"}, {"color": "#97c2fc", "id": "tu\u1ea7n l\u1ec5 th\u1ee9 4 c\u1ee7a h\u1ecdc k\u1ef3 ch\u00ednh", "label": "tu\u1ea7n l\u1ec5 th\u1ee9 4 c\u1ee7a h\u1ecdc k\u1ef3 ch\u00ednh", "shape": "dot"}, {"color": "#97c2fc", "id": "tu\u1ea7n l\u1ec5 th\u1ee9 2 c\u1ee7a h\u1ecdc k\u1ef3 ph\u1ee5", "label": "tu\u1ea7n l\u1ec5 th\u1ee9 2 c\u1ee7a h\u1ecdc k\u1ef3 ph\u1ee5", "shape": "dot"}, {"color": "#97c2fc", "id": "T\u1ed5ng s\u1ed1 t\u00edn ch\u1ec9 sau khi r\u00fat", "label": "T\u1ed5ng s\u1ed1 t\u00edn ch\u1ec9 sau khi r\u00fat", "shape": "dot"}, {"color": "#97c2fc", "id": "14 t\u00edn ch\u1ec9 trong h\u1ecdc k\u1ef3 ch\u00ednh", "label": "14 t\u00edn ch\u1ec9 trong h\u1ecdc k\u1ef3 ch\u00ednh", "shape": "dot"}, {"color": "#97c2fc", "id": "nh\u1eefng h\u1ecdc ph\u1ea7n \u0111\u00e3 r\u00fat", "label": "nh\u1eefng h\u1ecdc ph\u1ea7n \u0111\u00e3 r\u00fat", "shape": "dot"}, {"color": "#97c2fc", "id": "Nh\u1eefng h\u1ecdc ph\u1ea7n \u0111\u00e3 r\u00fat", "label": "Nh\u1eefng h\u1ecdc ph\u1ea7n \u0111\u00e3 r\u00fat", "shape": "dot"}, {"color": "#97c2fc", "id": "R trong B\u1ea3ng \u0111i\u1ec3m h\u1ecdc k\u1ef3 t\u01b0\u01a1ng \u1ee9ng", "label": "R trong B\u1ea3ng \u0111i\u1ec3m h\u1ecdc k\u1ef3 t\u01b0\u01a1ng \u1ee9ng", "shape": "dot"}, {"color": "#97c2fc", "id": "R", "label": "R", "shape": "dot"}, {"color": "#97c2fc", "id": "B\u1ea3ng \u0111i\u1ec3m h\u1ecdc k\u1ef3 t\u01b0\u01a1ng \u1ee9ng", "label": "B\u1ea3ng \u0111i\u1ec3m h\u1ecdc k\u1ef3 t\u01b0\u01a1ng \u1ee9ng", "shape": "dot"}, {"color": "#97c2fc", "id": "h\u1ecdc ph\u1ea7n", "label": "h\u1ecdc ph\u1ea7n", "shape": "dot"}, {"color": "#97c2fc", "id": "F", "label": "F", "shape": "dot"}, {"color": "#97c2fc", "id": "c\u00e1c h\u1ecdc ph\u1ea7n c\u00f3 \u0111i\u1ec3m F", "label": "c\u00e1c h\u1ecdc ph\u1ea7n c\u00f3 \u0111i\u1ec3m F", "shape": "dot"}, {"color": "#97c2fc", "id": "h\u1ecdc ph\u1ea7n \u0111\u00e3 \u0111\u1ea1t \u0111\u1ec3 c\u1ea3i thi\u1ec7n k\u1ebft qu\u1ea3", "label": "h\u1ecdc ph\u1ea7n \u0111\u00e3 \u0111\u1ea1t \u0111\u1ec3 c\u1ea3i thi\u1ec7n k\u1ebft qu\u1ea3", "shape": "dot"}, {"color": "#97c2fc", "id": "\u0110i\u1ec3m c\u1ee7a h\u1ecdc ph\u1ea7n", "label": "\u0110i\u1ec3m c\u1ee7a h\u1ecdc ph\u1ea7n", "shape": "dot"}, {"color": "#97c2fc", "id": "\u0111i\u1ec3m cao nh\u1ea5t trong c\u00e1c l\u1ea7n h\u1ecdc", "label": "\u0111i\u1ec3m cao nh\u1ea5t trong c\u00e1c l\u1ea7n h\u1ecdc", "shape": "dot"}, {"color": "#97c2fc", "id": "c\u00e1c h\u1ecdc ph\u1ea7n kh\u00f4ng thu\u1ed9c CT\u0110T c\u1ee7a ng\u00e0nh/chuy\u00ean ng\u00e0nh \u0111\u1ec3 c\u00f3 ch\u1ee9ng nh\u1eadn", "label": "c\u00e1c h\u1ecdc ph\u1ea7n kh\u00f4ng thu\u1ed9c CT\u0110T c\u1ee7a ng\u00e0nh/chuy\u00ean ng\u00e0nh \u0111\u1ec3 c\u00f3 ch\u1ee9ng nh\u1eadn", "shape": "dot"}, {"color": "#97c2fc", "id": "K\u1ebft qu\u1ea3 h\u1ecdc ph\u1ea7n n\u00e0y", "label": "K\u1ebft qu\u1ea3 h\u1ecdc ph\u1ea7n n\u00e0y", "shape": "dot"}, {"color": "#97c2fc", "id": "\u0111i\u1ec3m trung b\u00ecnh h\u1ecdc k\u1ef3", "label": "\u0111i\u1ec3m trung b\u00ecnh h\u1ecdc k\u1ef3", "shape": "dot"}, {"color": "#97c2fc", "id": "x\u00e9t t\u1ed1t nghi\u1ec7p", "label": "x\u00e9t t\u1ed1t nghi\u1ec7p", "shape": "dot"}, {"color": "#97c2fc", "id": "L\u1edbp h\u1ecdc ph\u1ea7n", "label": "L\u1edbp h\u1ecdc ph\u1ea7n", "shape": "dot"}, {"color": "#97c2fc", "id": "t\u1eebng h\u1ecdc ph\u1ea7n", "label": "t\u1eebng h\u1ecdc ph\u1ea7n", "shape": "dot"}, {"color": "#97c2fc", "id": "s\u1ed1 l\u01b0\u1ee3ng \u0111\u0103ng k\u00fd c\u1ee7a sinh vi\u00ean", "label": "s\u1ed1 l\u01b0\u1ee3ng \u0111\u0103ng k\u00fd c\u1ee7a sinh vi\u00ean", "shape": "dot"}, {"color": "#97c2fc", "id": "S\u1ed1 l\u01b0\u1ee3ng sinh vi\u00ean", "label": "S\u1ed1 l\u01b0\u1ee3ng sinh vi\u00ean", "shape": "dot"}, {"color": "#97c2fc", "id": "l\u1edbp t\u00f9y theo t\u1eebng lo\u1ea1i h\u1ecdc ph\u1ea7n", "label": "l\u1edbp t\u00f9y theo t\u1eebng lo\u1ea1i h\u1ecdc ph\u1ea7n", "shape": "dot"}, {"color": "#97c2fc", "id": "L\u00fd thuy\u1ebft, l\u00fd thuy\u1ebft k\u1ebft h\u1ee3p th\u1ef1c h\u00e0nh", "label": "L\u00fd thuy\u1ebft, l\u00fd thuy\u1ebft k\u1ebft h\u1ee3p th\u1ef1c h\u00e0nh", "shape": "dot"}, {"color": "#97c2fc", "id": "30", "label": "30", "shape": "dot"}, {"color": "#97c2fc", "id": "60", "label": "60", "shape": "dot"}, {"color": "#97c2fc", "id": "200", "label": "200", "shape": "dot"}, {"color": "#97c2fc", "id": "Th\u1ef1c h\u00e0nh, th\u1ef1c t\u1eadp, \u0111\u1ed3 \u00e1n", "label": "Th\u1ef1c h\u00e0nh, th\u1ef1c t\u1eadp, \u0111\u1ed3 \u00e1n", "shape": "dot"}, {"color": "#97c2fc", "id": "20", "label": "20", "shape": "dot"}, {"color": "#97c2fc", "id": "25", "label": "25", "shape": "dot"}, {"color": "#97c2fc", "id": "50", "label": "50", "shape": "dot"}, {"color": "#97c2fc", "id": "H\u1ecdc ph\u1ea7n Gi\u00e1o d\u1ee5c th\u1ec3 ch\u1ea5t", "label": "H\u1ecdc ph\u1ea7n Gi\u00e1o d\u1ee5c th\u1ec3 ch\u1ea5t", "shape": "dot"}, {"color": "#97c2fc", "id": "40", "label": "40", "shape": "dot"}, {"color": "#97c2fc", "id": "C\u00e1c tr\u01b0\u1eddng h\u1ee3p kh\u00e1c", "label": "C\u00e1c tr\u01b0\u1eddng h\u1ee3p kh\u00e1c", "shape": "dot"}, {"color": "#97c2fc", "id": "Hi\u1ec7u tr\u01b0\u1edfng quy\u1ebft \u0111\u1ecbnh", "label": "Hi\u1ec7u tr\u01b0\u1edfng quy\u1ebft \u0111\u1ecbnh", "shape": "dot"}, {"color": "#97c2fc", "id": "Tr\u01b0\u1edfng Khoa", "label": "Tr\u01b0\u1edfng Khoa", "shape": "dot"}, {"color": "#97c2fc", "id": "nh\u1eefng l\u1edbp h\u1ecdc ph\u1ea7n", "label": "nh\u1eefng l\u1edbp h\u1ecdc ph\u1ea7n", "shape": "dot"}, {"color": "#97c2fc", "id": "l\u1edbp l\u00fd thuy\u1ebft, l\u00fd thuy\u1ebft k\u1ebft h\u1ee3p th\u1ef1c h\u00e0nh", "label": "l\u1edbp l\u00fd thuy\u1ebft, l\u00fd thuy\u1ebft k\u1ebft h\u1ee3p th\u1ef1c h\u00e0nh", "shape": "dot"}, {"color": "#97c2fc", "id": "30 sinh vi\u00ean", "label": "30 sinh vi\u00ean", "shape": "dot"}, {"color": "#97c2fc", "id": "l\u1edbp th\u1ef1c h\u00e0nh, th\u1ef1c t\u1eadp, \u0111\u1ed3 \u00e1n", "label": "l\u1edbp th\u1ef1c h\u00e0nh, th\u1ef1c t\u1eadp, \u0111\u1ed3 \u00e1n", "shape": "dot"}, {"color": "#97c2fc", "id": "20 sinh vi\u00ean", "label": "20 sinh vi\u00ean", "shape": "dot"}, {"color": "#97c2fc", "id": "40 sinh vi\u00ean", "label": "40 sinh vi\u00ean", "shape": "dot"}, {"color": "#97c2fc", "id": "c\u00e1c l\u1edbp h\u1ecdc ph\u1ea7n kh\u00f4ng \u0111\u1ee7 s\u1ed1 l\u01b0\u1ee3ng sinh vi\u00ean \u0111\u0103ng k\u00fd theo quy \u0111\u1ecbnh", "label": "c\u00e1c l\u1edbp h\u1ecdc ph\u1ea7n kh\u00f4ng \u0111\u1ee7 s\u1ed1 l\u01b0\u1ee3ng sinh vi\u00ean \u0111\u0103ng k\u00fd theo quy \u0111\u1ecbnh", "shape": "dot"}, {"color": "#97c2fc", "id": "v\u0103n b\u1ea3n \u0111\u1ec1 ngh\u1ecb", "label": "v\u0103n b\u1ea3n \u0111\u1ec1 ngh\u1ecb", "shape": "dot"}, {"color": "#97c2fc", "id": "cam k\u1ebft gi\u1ea3i ph\u00e1p t\u00e0i ch\u00ednh", "label": "cam k\u1ebft gi\u1ea3i ph\u00e1p t\u00e0i ch\u00ednh", "shape": "dot"}, {"color": "#97c2fc", "id": "t\u1ed5ng h\u1ecdc ph\u00ed l\u1edbp", "label": "t\u1ed5ng h\u1ecdc ph\u00ed l\u1edbp", "shape": "dot"}, {"color": "#97c2fc", "id": "kinh ph\u00ed c\u1ee7a l\u1edbp v\u1edbi s\u1ed1 l\u01b0\u1ee3ng sinh vi\u00ean t\u1ed1i thi\u1ec3u", "label": "kinh ph\u00ed c\u1ee7a l\u1edbp v\u1edbi s\u1ed1 l\u01b0\u1ee3ng sinh vi\u00ean t\u1ed1i thi\u1ec3u", "shape": "dot"}, {"color": "#97c2fc", "id": "Hi\u1ec7u tr\u01b0\u1edfng ph\u00ea duy\u1ec7t", "label": "Hi\u1ec7u tr\u01b0\u1edfng ph\u00ea duy\u1ec7t", "shape": "dot"}, {"color": "#97c2fc", "id": "tr\u01b0\u1edbc 01 tu\u1ea7n tr\u01b0\u1edbc khi b\u1eaft \u0111\u1ea7u h\u1ecdc k\u1ef3", "label": "tr\u01b0\u1edbc 01 tu\u1ea7n tr\u01b0\u1edbc khi b\u1eaft \u0111\u1ea7u h\u1ecdc k\u1ef3", "shape": "dot"}, {"color": "#97c2fc", "id": "M\u1ee9c thu h\u1ecdc ph\u1ea7n l\u00fd thuy\u1ebft", "label": "M\u1ee9c thu h\u1ecdc ph\u1ea7n l\u00fd thuy\u1ebft", "shape": "dot"}, {"color": "#97c2fc", "id": "(\u0110\u01a1n gi\u00e1/t\u00edn ch\u1ec9 x S\u1ed1 t\u00edn ch\u1ec9 x 30)/S\u1ed1 l\u01b0\u1ee3ng sinh vi\u00ean \u0111\u0103ng k\u00fd", "label": "(\u0110\u01a1n gi\u00e1/t\u00edn ch\u1ec9 x S\u1ed1 t\u00edn ch\u1ec9 x 30)/S\u1ed1 l\u01b0\u1ee3ng sinh vi\u00ean \u0111\u0103ng k\u00fd", "shape": "dot"}, {"color": "#97c2fc", "id": "M\u1ee9c thu h\u1ecdc ph\u1ea7n th\u1ef1c h\u00e0nh, \u0111\u1ed3 \u00e1n", "label": "M\u1ee9c thu h\u1ecdc ph\u1ea7n th\u1ef1c h\u00e0nh, \u0111\u1ed3 \u00e1n", "shape": "dot"}, {"color": "#97c2fc", "id": "(\u0110\u01a1n gi\u00e1/t\u00edn ch\u1ec9 x S\u1ed1 t\u00edn ch\u1ec9 x 20)/S\u1ed1 l\u01b0\u1ee3ng sinh vi\u00ean \u0111\u0103ng k\u00fd", "label": "(\u0110\u01a1n gi\u00e1/t\u00edn ch\u1ec9 x S\u1ed1 t\u00edn ch\u1ec9 x 20)/S\u1ed1 l\u01b0\u1ee3ng sinh vi\u00ean \u0111\u0103ng k\u00fd", "shape": "dot"}, {"color": "#97c2fc", "id": "c\u00f3 t\u1eeb 30 sinh vi\u00ean c\u00f3 nguy\u1ec7n v\u1ecdng h\u1ecdc \u0111\u01b0\u1ee3c Khoa/B\u1ed9 m\u00f4n ph\u1ee5 tr\u00e1ch h\u1ecdc ph\u1ea7n \u0111\u1ec1 xu\u1ea5t v\u00e0 Hi\u1ec7u tr\u01b0\u1edfng ch\u1ea5p thu\u1eadn", "label": "c\u00f3 t\u1eeb 30 sinh vi\u00ean c\u00f3 nguy\u1ec7n v\u1ecdng h\u1ecdc \u0111\u01b0\u1ee3c Khoa/B\u1ed9 m\u00f4n ph\u1ee5 tr\u00e1ch h\u1ecdc ph\u1ea7n \u0111\u1ec1 xu\u1ea5t v\u00e0 Hi\u1ec7u tr\u01b0\u1edfng ch\u1ea5p thu\u1eadn", "shape": "dot"}, {"color": "#97c2fc", "id": "Ti\u1ebft 1", "label": "Ti\u1ebft 1", "shape": "dot"}, {"color": "#97c2fc", "id": "07g00 - 07g50", "label": "07g00 - 07g50", "shape": "dot"}, {"color": "#97c2fc", "id": "Ti\u1ebft 2", "label": "Ti\u1ebft 2", "shape": "dot"}, {"color": "#97c2fc", "id": "07g50 - 08g40", "label": "07g50 - 08g40", "shape": "dot"}, {"color": "#97c2fc", "id": "Ti\u1ebft 3", "label": "Ti\u1ebft 3", "shape": "dot"}, {"color": "#97c2fc", "id": "08g40 - 09g30", "label": "08g40 - 09g30", "shape": "dot"}, {"color": "#97c2fc", "id": "Ti\u1ebft 4", "label": "Ti\u1ebft 4", "shape": "dot"}, {"color": "#97c2fc", "id": "09g35 - 10g25", "label": "09g35 - 10g25", "shape": "dot"}, {"color": "#97c2fc", "id": "Ti\u1ebft 5", "label": "Ti\u1ebft 5", "shape": "dot"}, {"color": "#97c2fc", "id": "10g25 - 11g15", "label": "10g25 - 11g15", "shape": "dot"}, {"color": "#97c2fc", "id": "Ti\u1ebft 6", "label": "Ti\u1ebft 6", "shape": "dot"}, {"color": "#97c2fc", "id": "11g15 - 12g05", "label": "11g15 - 12g05", "shape": "dot"}, {"color": "#97c2fc", "id": "Ti\u1ebft 7", "label": "Ti\u1ebft 7", "shape": "dot"}, {"color": "#97c2fc", "id": "12g15 - 13g05", "label": "12g15 - 13g05", "shape": "dot"}, {"color": "#97c2fc", "id": "Ti\u1ebft 8", "label": "Ti\u1ebft 8", "shape": "dot"}, {"color": "#97c2fc", "id": "13g05 - 13g55", "label": "13g05 - 13g55", "shape": "dot"}, {"color": "#97c2fc", "id": "Ti\u1ebft 9", "label": "Ti\u1ebft 9", "shape": "dot"}, {"color": "#97c2fc", "id": "13g55 - 14g45", "label": "13g55 - 14g45", "shape": "dot"}, {"color": "#97c2fc", "id": "Ti\u1ebft 10", "label": "Ti\u1ebft 10", "shape": "dot"}, {"color": "#97c2fc", "id": "14g50 - 15g40", "label": "14g50 - 15g40", "shape": "dot"}, {"color": "#97c2fc", "id": "Ti\u1ebft 11", "label": "Ti\u1ebft 11", "shape": "dot"}, {"color": "#97c2fc", "id": "15g40 - 16g30", "label": "15g40 - 16g30", "shape": "dot"}, {"color": "#97c2fc", "id": "Ti\u1ebft 12", "label": "Ti\u1ebft 12", "shape": "dot"}, {"color": "#97c2fc", "id": "16g30 - 17g20", "label": "16g30 - 17g20", "shape": "dot"}, {"color": "#97c2fc", "id": "Ti\u1ebft 13", "label": "Ti\u1ebft 13", "shape": "dot"}, {"color": "#97c2fc", "id": "17g30 - 18g20", "label": "17g30 - 18g20", "shape": "dot"}, {"color": "#97c2fc", "id": "Ti\u1ebft 14", "label": "Ti\u1ebft 14", "shape": "dot"}, {"color": "#97c2fc", "id": "18g20 - 19g10", "label": "18g20 - 19g10", "shape": "dot"}, {"color": "#97c2fc", "id": "Ti\u1ebft 15", "label": "Ti\u1ebft 15", "shape": "dot"}, {"color": "#97c2fc", "id": "19g10 - 20g00", "label": "19g10 - 20g00", "shape": "dot"}, {"color": "#97c2fc", "id": "c\u00e1n b\u1ed9 gi\u1ea3ng d\u1ea1y", "label": "c\u00e1n b\u1ed9 gi\u1ea3ng d\u1ea1y", "shape": "dot"}, {"color": "#97c2fc", "id": "\u0111\u1ec1 c\u01b0\u01a1ng chi ti\u1ebft h\u1ecdc ph\u1ea7n", "label": "\u0111\u1ec1 c\u01b0\u01a1ng chi ti\u1ebft h\u1ecdc ph\u1ea7n", "shape": "dot"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Ph\u00f2ng \u0110\u00e0o t\u1ea1o", "label": "th\u00f4ng b\u00e1o cho", "to": "sinh vi\u00ean nh\u1eefng h\u1ecdc ph\u1ea7n s\u1ebd \u0111\u01b0\u1ee3c gi\u1ea3ng d\u1ea1y trong h\u1ecdc k\u1ef3 ti\u1ebfp theo"}, {"arrows": "to", "from": "Ph\u00f2ng \u0110\u00e0o t\u1ea1o", "label": "th\u00f4ng b\u00e1o", "to": "TKB c\u1ee7a t\u1eebng h\u1ecdc ph\u1ea7n"}, {"arrows": "to", "from": "Sinh vi\u00ean", "label": "\u0111\u0103ng k\u00fd", "to": "l\u1edbp h\u1ecdc ph\u1ea7n s\u1ebd th\u1ef1c hi\u1ec7n trong h\u1ecdc k\u1ef3 ti\u1ebfp theo"}, {"arrows": "to", "from": "Ph\u00f2ng \u0110\u00e0o t\u1ea1o", "label": "h\u01b0\u1edbng d\u1eabn", "to": "sinh vi\u00ean \u0111\u0103ng k\u00fd l\u1edbp h\u1ecdc ph\u1ea7n"}, {"arrows": "to", "from": "danh s\u00e1ch c\u00e1c l\u1edbp h\u1ecdc ph\u1ea7n", "label": "\u0111\u01b0\u1ee3c c\u00f4ng b\u1ed1", "to": "\u00edt nh\u1ea5t 01 tu\u1ea7n tr\u01b0\u1edbc khi b\u1eaft \u0111\u1ea7u h\u1ecdc k\u1ef3"}, {"arrows": "to", "from": "sinh vi\u00ean", "label": "\u0111\u0103ng k\u00fd", "to": "h\u1ecdc ph\u1ea7n theo k\u1ebf ho\u1ea1ch chung c\u1ee7a tr\u01b0\u1eddng"}, {"arrows": "to", "from": "sinh vi\u00ean", "label": "\u0111\u0103ng k\u00fd h\u1ecdc ph\u1ea7n", "to": "tr\u01b0\u1edbc khi h\u1ecdc k\u1ef3 m\u1edbi b\u1eaft \u0111\u1ea7u"}, {"arrows": "to", "from": "sinh vi\u00ean", "label": "ph\u1ea3i th\u1ef1c hi\u1ec7n", "to": "\u0111\u0103ng k\u00fd h\u1ecdc ph\u1ea7n"}, {"arrows": "to", "from": "sinh vi\u00ean", "label": "ph\u1ea3i th\u1ef1c hi\u1ec7n", "to": "theo k\u1ebf ho\u1ea1ch chung c\u1ee7a tr\u01b0\u1eddng"}, {"arrows": "to", "from": "sinh vi\u00ean", "label": "ph\u1ea3i th\u1ef1c hi\u1ec7n", "to": "tr\u01b0\u1edbc khi h\u1ecdc k\u1ef3 m\u1edbi b\u1eaft \u0111\u1ea7u"}, {"arrows": "to", "from": "C\u00e1c h\u1ecdc ph\u1ea7n", "label": "\u0111\u01b0\u1ee3c \u0111\u0103ng k\u00fd ph\u1ea3i theo", "to": "KHHT \u0111\u00e3 \u0111\u01b0\u1ee3c ph\u00ea duy\u1ec7t"}, {"arrows": "to", "from": "sinh vi\u00ean", "label": "\u0111\u0103ng k\u00fd tham d\u1ef1", "to": "c\u00e1c l\u1edbp h\u1ecdc ph\u1ea7n"}, {"arrows": "to", "from": "sinh vi\u00ean", "label": "\u0111\u0103ng k\u00fd tham d\u1ef1", "to": "trong h\u1ecdc k\u1ef3 ti\u1ebfp theo"}, {"arrows": "to", "from": "sinh vi\u00ean", "label": "\u0111\u0103ng k\u00fd tham d\u1ef1", "to": "nh\u1eefng h\u1ecdc ph\u1ea7n m\u1edbi"}, {"arrows": "to", "from": "sinh vi\u00ean", "label": "\u0111\u0103ng k\u00fd tham d\u1ef1", "to": "m\u1ed9t s\u1ed1 h\u1ecdc ph\u1ea7n ch\u01b0a \u0111\u1ea1t"}, {"arrows": "to", "from": "sinh vi\u00ean", "label": "\u0111\u0103ng k\u00fd tham d\u1ef1", "to": "m\u1ed9t s\u1ed1 h\u1ecdc ph\u1ea7n \u0111\u00e3 \u0111\u1ea1t"}, {"arrows": "to", "from": "s\u1ed1 l\u01b0\u1ee3ng t\u00edn ch\u1ec9 sinh vi\u00ean", "label": "\u0111\u01b0\u1ee3c quy \u0111\u1ecbnh trong", "to": "m\u1ed7i h\u1ecdc k\u1ef3"}, {"arrows": "to", "from": "sinh vi\u00ean", "label": "ph\u1ea3i \u0111\u0103ng k\u00fd h\u1ecdc \u00edt nh\u1ea5t", "to": "14 t\u00edn ch\u1ec9"}, {"arrows": "to", "from": "sinh vi\u00ean", "label": "\u0111\u0103ng k\u00fd t\u1ed1i \u0111a", "to": "28 t\u00edn ch\u1ec9"}, {"arrows": "to", "from": "sinh vi\u00ean", "label": "\u0111\u0103ng k\u00fd t\u1ed1i \u0111a", "to": "s\u1ed1 t\u00edn ch\u1ec9 t\u1ed1i \u0111a \u0111\u1ec3 r\u00fat ng\u1eafn th\u1eddi gian ho\u00e0n th\u00e0nh kh\u00f3a h\u1ecdc"}, {"arrows": "to", "from": "sinh vi\u00ean", "label": "\u0111\u0103ng k\u00fd kh\u00f4ng \u0111\u1ee7", "to": "14 t\u00edn ch\u1ec9/h\u1ecdc k\u1ef3"}, {"arrows": "to", "from": "sinh vi\u00ean", "label": "xem nh\u01b0", "to": "t\u1ef1 \u00fd b\u1ecf h\u1ecdc"}, {"arrows": "to", "from": "sinh vi\u00ean", "label": "\u0111\u0103ng k\u00fd t\u1ed1i \u0111a", "to": "12 t\u00edn ch\u1ec9"}, {"arrows": "to", "from": "Tr\u01b0\u1eddng", "label": "b\u1ed1 tr\u00ed", "to": "l\u1ecbch h\u1ecdc theo khung CT\u0110T ng\u00e0nh/ chuy\u00ean ng\u00e0nh"}, {"arrows": "to", "from": "Ph\u00f2ng \u0110\u00e0o t\u1ea1o", "label": "c\u00f4ng b\u1ed1", "to": "nh\u1eefng h\u1ecdc ph\u1ea7n, s\u1ed1 l\u1edbp h\u1ecdc ph\u1ea7n d\u1ef1 \u0111\u1ecbnh s\u1ebd m\u1edf trong h\u1ecdc k\u1ef3 ti\u1ebfp theo"}, {"arrows": "to", "from": "Ph\u00f2ng \u0110\u00e0o t\u1ea1o", "label": "c\u00f4ng b\u1ed1", "to": "nh\u1eefng h\u1ecdc ph\u1ea7n, s\u1ed1 l\u1edbp h\u1ecdc ph\u1ea7n d\u1ef1 \u0111\u1ecbnh s\u1ebd m\u1edf trong h\u1ecdc k\u1ef3 ti\u1ebfp theo"}, {"arrows": "to", "from": "Khoa/B\u1ed9 m\u00f4n", "label": "c\u0103n c\u1ee9 \u0111i\u1ec1u ki\u1ec7n v\u00e0 nhu c\u1ea7u", "to": "sinh vi\u00ean"}, {"arrows": "to", "from": "Khoa", "label": "\u0111\u1ec1 xu\u1ea5t", "to": "h\u1ee7y ho\u1eb7c m\u1edf th\u00eam h\u1ecdc ph\u1ea7n"}, {"arrows": "to", "from": "Khoa", "label": "\u0111\u1ec1 xu\u1ea5t", "to": "\u0111i\u1ec1u ch\u1ec9nh s\u1ed1 l\u1edbp h\u1ecdc ph\u1ea7n theo s\u1ed1 l\u01b0\u1ee3ng sinh vi\u00ean"}, {"arrows": "to", "from": "sinh vi\u00ean", "label": "d\u1ef1a v\u00e0o", "to": "KHHT v\u00e0 TKB"}, {"arrows": "to", "from": "sinh vi\u00ean", "label": "\u0111\u0103ng k\u00fd", "to": "tr\u1ef1c tuy\u1ebfn l\u1edbp h\u1ecdc ph\u1ea7n"}, {"arrows": "to", "from": "sinh vi\u00ean", "label": "xem v\u00e0 in", "to": "th\u1eddi kh\u00f3a bi\u1ec3u"}, {"arrows": "to", "from": "sinh vi\u00ean", "label": "c\u00f3 th\u1ec3 r\u00fat b\u1edbt", "to": "h\u1ecdc ph\u1ea7n \u0111\u00e3 \u0111\u0103ng k\u00fd"}, {"arrows": "to", "from": "Sinh vi\u00ean", "label": "c\u00f3 th\u1ec3", "to": "r\u00fat b\u1edbt h\u1ecdc ph\u1ea7n \u0111\u00e3 \u0111\u0103ng k\u00fd"}, {"arrows": "to", "from": "Sinh vi\u00ean", "label": "th\u1ef1c hi\u1ec7n r\u00fat h\u1ecdc ph\u1ea7n", "to": "tr\u1ef1c ti\u1ebfp tr\u00ean website \u0111\u0103ng k\u00fd h\u1ecdc ph\u1ea7n"}, {"arrows": "to", "from": "Sinh vi\u00ean", "label": "th\u1ef1c hi\u1ec7n r\u00fat h\u1ecdc ph\u1ea7n", "to": "theo th\u1eddi gian quy \u0111\u1ecbnh c\u1ee5 th\u1ec3 c\u1ee7a t\u1eebng h\u1ecdc k\u1ef3"}, {"arrows": "to", "from": "Sinh vi\u00ean", "label": "r\u00fat h\u1ecdc ph\u1ea7n ch\u1eadm nh\u1ea5t l\u00e0", "to": "tu\u1ea7n l\u1ec5 th\u1ee9 4 c\u1ee7a h\u1ecdc k\u1ef3 ch\u00ednh"}, {"arrows": "to", "from": "Sinh vi\u00ean", "label": "r\u00fat h\u1ecdc ph\u1ea7n ch\u1eadm nh\u1ea5t l\u00e0", "to": "tu\u1ea7n l\u1ec5 th\u1ee9 2 c\u1ee7a h\u1ecdc k\u1ef3 ph\u1ee5"}, {"arrows": "to", "from": "T\u1ed5ng s\u1ed1 t\u00edn ch\u1ec9 sau khi r\u00fat", "label": "kh\u00f4ng \u0111\u01b0\u1ee3c d\u01b0\u1edbi", "to": "14 t\u00edn ch\u1ec9 trong h\u1ecdc k\u1ef3 ch\u00ednh"}, {"arrows": "to", "from": "Sinh vi\u00ean", "label": "kh\u00f4ng \u0111\u01b0\u1ee3c ho\u00e0n tr\u1ea3 h\u1ecdc ph\u00ed", "to": "nh\u1eefng h\u1ecdc ph\u1ea7n \u0111\u00e3 r\u00fat"}, {"arrows": "to", "from": "Nh\u1eefng h\u1ecdc ph\u1ea7n \u0111\u00e3 r\u00fat", "label": "s\u1ebd nh\u1eadn \u0111i\u1ec3m", "to": "R trong B\u1ea3ng \u0111i\u1ec3m h\u1ecdc k\u1ef3 t\u01b0\u01a1ng \u1ee9ng"}, {"arrows": "to", "from": "Nh\u1eefng h\u1ecdc ph\u1ea7n \u0111\u00e3 r\u00fat", "label": "s\u1ebd nh\u1eadn \u0111i\u1ec3m", "to": "R"}, {"arrows": "to", "from": "R", "label": "trong", "to": "B\u1ea3ng \u0111i\u1ec3m h\u1ecdc k\u1ef3 t\u01b0\u01a1ng \u1ee9ng"}, {"arrows": "to", "from": "Sinh vi\u00ean", "label": "\u0111\u00e3 \u0111\u0103ng k\u00fd", "to": "h\u1ecdc ph\u1ea7n"}, {"arrows": "to", "from": "Sinh vi\u00ean", "label": "kh\u00f4ng \u0111i h\u1ecdc ho\u1eb7c kh\u00f4ng d\u1ef1 thi k\u1ebft th\u00fac", "to": "h\u1ecdc ph\u1ea7n"}, {"arrows": "to", "from": "Sinh vi\u00ean", "label": "s\u1ebd b\u1ecb \u0111i\u1ec3m", "to": "F"}, {"arrows": "to", "from": "Sinh vi\u00ean", "label": "ph\u1ea3i ho\u00e0n th\u00e0nh ngh\u0129a v\u1ee5 \u0111\u00f3ng h\u1ecdc ph\u00ed cho", "to": "h\u1ecdc ph\u1ea7n \u0111\u00e3 \u0111\u0103ng k\u00fd"}, {"arrows": "to", "from": "Sinh vi\u00ean", "label": "ph\u1ea3i \u0111\u0103ng k\u00fd h\u1ecdc l\u1ea1i", "to": "c\u00e1c h\u1ecdc ph\u1ea7n c\u00f3 \u0111i\u1ec3m F"}, {"arrows": "to", "from": "Sinh vi\u00ean", "label": "c\u00f3 th\u1ec3 \u0111\u0103ng k\u00fd h\u1ecdc l\u1ea1i", "to": "h\u1ecdc ph\u1ea7n \u0111\u00e3 \u0111\u1ea1t \u0111\u1ec3 c\u1ea3i thi\u1ec7n k\u1ebft qu\u1ea3"}, {"arrows": "to", "from": "\u0110i\u1ec3m c\u1ee7a h\u1ecdc ph\u1ea7n", "label": "s\u1ebd l\u00e0", "to": "\u0111i\u1ec3m cao nh\u1ea5t trong c\u00e1c l\u1ea7n h\u1ecdc"}, {"arrows": "to", "from": "Sinh vi\u00ean", "label": "c\u00f3 th\u1ec3 \u0111\u0103ng k\u00fd h\u1ecdc", "to": "c\u00e1c h\u1ecdc ph\u1ea7n kh\u00f4ng thu\u1ed9c CT\u0110T c\u1ee7a ng\u00e0nh/chuy\u00ean ng\u00e0nh \u0111\u1ec3 c\u00f3 ch\u1ee9ng nh\u1eadn"}, {"arrows": "to", "from": "K\u1ebft qu\u1ea3 h\u1ecdc ph\u1ea7n n\u00e0y", "label": "kh\u00f4ng \u0111\u01b0\u1ee3c t\u00ednh v\u00e0o", "to": "\u0111i\u1ec3m trung b\u00ecnh h\u1ecdc k\u1ef3"}, {"arrows": "to", "from": "K\u1ebft qu\u1ea3 h\u1ecdc ph\u1ea7n n\u00e0y", "label": "kh\u00f4ng \u0111\u01b0\u1ee3c s\u1eed d\u1ee5ng \u0111\u1ec3", "to": "x\u00e9t t\u1ed1t nghi\u1ec7p"}, {"arrows": "to", "from": "L\u1edbp h\u1ecdc ph\u1ea7n", "label": "\u0111\u01b0\u1ee3c t\u1ed5 ch\u1ee9c theo", "to": "t\u1eebng h\u1ecdc ph\u1ea7n"}, {"arrows": "to", "from": "L\u1edbp h\u1ecdc ph\u1ea7n", "label": "d\u1ef1a v\u00e0o", "to": "s\u1ed1 l\u01b0\u1ee3ng \u0111\u0103ng k\u00fd c\u1ee7a sinh vi\u00ean"}, {"arrows": "to", "from": "S\u1ed1 l\u01b0\u1ee3ng sinh vi\u00ean", "label": "t\u1ed1i thi\u1ec3u cho", "to": "l\u1edbp t\u00f9y theo t\u1eebng lo\u1ea1i h\u1ecdc ph\u1ea7n"}, {"arrows": "to", "from": "S\u1ed1 l\u01b0\u1ee3ng sinh vi\u00ean", "label": "t\u1ed1i \u0111a cho", "to": "l\u1edbp t\u00f9y theo t\u1eebng lo\u1ea1i h\u1ecdc ph\u1ea7n"}, {"arrows": "to", "from": "L\u00fd thuy\u1ebft, l\u00fd thuy\u1ebft k\u1ebft h\u1ee3p th\u1ef1c h\u00e0nh", "label": "c\u00f3 s\u1ed1 l\u01b0\u1ee3ng sinh vi\u00ean t\u1ed1i thi\u1ec3u l\u00e0", "to": "30"}, {"arrows": "to", "from": "L\u00fd thuy\u1ebft, l\u00fd thuy\u1ebft k\u1ebft h\u1ee3p th\u1ef1c h\u00e0nh", "label": "c\u00f3 s\u1ed1 l\u01b0\u1ee3ng sinh vi\u00ean chu\u1ea9n l\u00e0", "to": "60"}, {"arrows": "to", "from": "L\u00fd thuy\u1ebft, l\u00fd thuy\u1ebft k\u1ebft h\u1ee3p th\u1ef1c h\u00e0nh", "label": "c\u00f3 s\u1ed1 l\u01b0\u1ee3ng sinh vi\u00ean t\u1ed1i \u0111a l\u00e0", "to": "200"}, {"arrows": "to", "from": "Th\u1ef1c h\u00e0nh, th\u1ef1c t\u1eadp, \u0111\u1ed3 \u00e1n", "label": "c\u00f3 s\u1ed1 l\u01b0\u1ee3ng sinh vi\u00ean t\u1ed1i thi\u1ec3u l\u00e0", "to": "20"}, {"arrows": "to", "from": "Th\u1ef1c h\u00e0nh, th\u1ef1c t\u1eadp, \u0111\u1ed3 \u00e1n", "label": "c\u00f3 s\u1ed1 l\u01b0\u1ee3ng sinh vi\u00ean chu\u1ea9n l\u00e0", "to": "25"}, {"arrows": "to", "from": "Th\u1ef1c h\u00e0nh, th\u1ef1c t\u1eadp, \u0111\u1ed3 \u00e1n", "label": "c\u00f3 s\u1ed1 l\u01b0\u1ee3ng sinh vi\u00ean t\u1ed1i \u0111a l\u00e0", "to": "50"}, {"arrows": "to", "from": "H\u1ecdc ph\u1ea7n Gi\u00e1o d\u1ee5c th\u1ec3 ch\u1ea5t", "label": "c\u00f3 s\u1ed1 l\u01b0\u1ee3ng sinh vi\u00ean t\u1ed1i thi\u1ec3u l\u00e0", "to": "40"}, {"arrows": "to", "from": "H\u1ecdc ph\u1ea7n Gi\u00e1o d\u1ee5c th\u1ec3 ch\u1ea5t", "label": "c\u00f3 s\u1ed1 l\u01b0\u1ee3ng sinh vi\u00ean chu\u1ea9n l\u00e0", "to": "60"}, {"arrows": "to", "from": "C\u00e1c tr\u01b0\u1eddng h\u1ee3p kh\u00e1c", "label": "do", "to": "Hi\u1ec7u tr\u01b0\u1edfng quy\u1ebft \u0111\u1ecbnh"}, {"arrows": "to", "from": "C\u00e1c tr\u01b0\u1eddng h\u1ee3p kh\u00e1c", "label": "tr\u00ean c\u01a1 s\u1edf \u0111\u1ec1 xu\u1ea5t c\u1ee7a", "to": "Tr\u01b0\u1edfng Khoa"}, {"arrows": "to", "from": "Tr\u01b0\u1eddng", "label": "s\u1ebd h\u1ee7y", "to": "nh\u1eefng l\u1edbp h\u1ecdc ph\u1ea7n"}, {"arrows": "to", "from": "l\u1edbp l\u00fd thuy\u1ebft, l\u00fd thuy\u1ebft k\u1ebft h\u1ee3p th\u1ef1c h\u00e0nh", "label": "c\u00f3 s\u1ed1 l\u01b0\u1ee3ng \u0111\u0103ng k\u00fd \u00edt h\u01a1n", "to": "30 sinh vi\u00ean"}, {"arrows": "to", "from": "l\u1edbp th\u1ef1c h\u00e0nh, th\u1ef1c t\u1eadp, \u0111\u1ed3 \u00e1n", "label": "c\u00f3 s\u1ed1 l\u01b0\u1ee3ng \u0111\u0103ng k\u00fd \u00edt h\u01a1n", "to": "20 sinh vi\u00ean"}, {"arrows": "to", "from": "H\u1ecdc ph\u1ea7n Gi\u00e1o d\u1ee5c th\u1ec3 ch\u1ea5t", "label": "c\u00f3 s\u1ed1 l\u01b0\u1ee3ng \u0111\u0103ng k\u00fd \u00edt h\u01a1n", "to": "40 sinh vi\u00ean"}, {"arrows": "to", "from": "Khoa/B\u1ed9 m\u00f4n", "label": "mu\u1ed1n duy tr\u00ec", "to": "c\u00e1c l\u1edbp h\u1ecdc ph\u1ea7n kh\u00f4ng \u0111\u1ee7 s\u1ed1 l\u01b0\u1ee3ng sinh vi\u00ean \u0111\u0103ng k\u00fd theo quy \u0111\u1ecbnh"}, {"arrows": "to", "from": "Khoa/B\u1ed9 m\u00f4n", "label": "ph\u1ea3i c\u00f3", "to": "v\u0103n b\u1ea3n \u0111\u1ec1 ngh\u1ecb"}, {"arrows": "to", "from": "v\u0103n b\u1ea3n \u0111\u1ec1 ngh\u1ecb", "label": "c\u00f3", "to": "cam k\u1ebft gi\u1ea3i ph\u00e1p t\u00e0i ch\u00ednh"}, {"arrows": "to", "from": "t\u1ed5ng h\u1ecdc ph\u00ed l\u1edbp", "label": "b\u1eb1ng", "to": "kinh ph\u00ed c\u1ee7a l\u1edbp v\u1edbi s\u1ed1 l\u01b0\u1ee3ng sinh vi\u00ean t\u1ed1i thi\u1ec3u"}, {"arrows": "to", "from": "v\u0103n b\u1ea3n \u0111\u1ec1 ngh\u1ecb", "label": "\u0111\u01b0\u1ee3c", "to": "Hi\u1ec7u tr\u01b0\u1edfng ph\u00ea duy\u1ec7t"}, {"arrows": "to", "from": "v\u0103n b\u1ea3n \u0111\u1ec1 ngh\u1ecb", "label": "ph\u00ea duy\u1ec7t ch\u1eadm nh\u1ea5t", "to": "tr\u01b0\u1edbc 01 tu\u1ea7n tr\u01b0\u1edbc khi b\u1eaft \u0111\u1ea7u h\u1ecdc k\u1ef3"}, {"arrows": "to", "from": "M\u1ee9c thu h\u1ecdc ph\u1ea7n l\u00fd thuy\u1ebft", "label": "\u0111\u01b0\u1ee3c t\u00ednh b\u1eb1ng", "to": "(\u0110\u01a1n gi\u00e1/t\u00edn ch\u1ec9 x S\u1ed1 t\u00edn ch\u1ec9 x 30)/S\u1ed1 l\u01b0\u1ee3ng sinh vi\u00ean \u0111\u0103ng k\u00fd"}, {"arrows": "to", "from": "M\u1ee9c thu h\u1ecdc ph\u1ea7n th\u1ef1c h\u00e0nh, \u0111\u1ed3 \u00e1n", "label": "\u0111\u01b0\u1ee3c t\u00ednh b\u1eb1ng", "to": "(\u0110\u01a1n gi\u00e1/t\u00edn ch\u1ec9 x S\u1ed1 t\u00edn ch\u1ec9 x 20)/S\u1ed1 l\u01b0\u1ee3ng sinh vi\u00ean \u0111\u0103ng k\u00fd"}, {"arrows": "to", "from": "Tr\u01b0\u1eddng", "label": "m\u1edf th\u00eam l\u1edbp h\u1ecdc ph\u1ea7n khi", "to": "c\u00f3 t\u1eeb 30 sinh vi\u00ean c\u00f3 nguy\u1ec7n v\u1ecdng h\u1ecdc \u0111\u01b0\u1ee3c Khoa/B\u1ed9 m\u00f4n ph\u1ee5 tr\u00e1ch h\u1ecdc ph\u1ea7n \u0111\u1ec1 xu\u1ea5t v\u00e0 Hi\u1ec7u tr\u01b0\u1edfng ch\u1ea5p thu\u1eadn"}, {"arrows": "to", "from": "Ti\u1ebft 1", "label": "th\u1eddi gian", "to": "07g00 - 07g50"}, {"arrows": "to", "from": "Ti\u1ebft 2", "label": "th\u1eddi gian", "to": "07g50 - 08g40"}, {"arrows": "to", "from": "Ti\u1ebft 3", "label": "th\u1eddi gian", "to": "08g40 - 09g30"}, {"arrows": "to", "from": "Ti\u1ebft 4", "label": "th\u1eddi gian", "to": "09g35 - 10g25"}, {"arrows": "to", "from": "Ti\u1ebft 5", "label": "th\u1eddi gian", "to": "10g25 - 11g15"}, {"arrows": "to", "from": "Ti\u1ebft 6", "label": "th\u1eddi gian", "to": "11g15 - 12g05"}, {"arrows": "to", "from": "Ti\u1ebft 7", "label": "th\u1eddi gian", "to": "12g15 - 13g05"}, {"arrows": "to", "from": "Ti\u1ebft 8", "label": "th\u1eddi gian", "to": "13g05 - 13g55"}, {"arrows": "to", "from": "Ti\u1ebft 9", "label": "th\u1eddi gian", "to": "13g55 - 14g45"}, {"arrows": "to", "from": "Ti\u1ebft 10", "label": "th\u1eddi gian", "to": "14g50 - 15g40"}, {"arrows": "to", "from": "Ti\u1ebft 11", "label": "th\u1eddi gian", "to": "15g40 - 16g30"}, {"arrows": "to", "from": "Ti\u1ebft 12", "label": "th\u1eddi gian", "to": "16g30 - 17g20"}, {"arrows": "to", "from": "Ti\u1ebft 13", "label": "th\u1eddi gian", "to": "17g30 - 18g20"}, {"arrows": "to", "from": "Ti\u1ebft 14", "label": "th\u1eddi gian", "to": "18g20 - 19g10"}, {"arrows": "to", "from": "Ti\u1ebft 15", "label": "th\u1eddi gian", "to": "19g10 - 20g00"}, {"arrows": "to", "from": "c\u00e1n b\u1ed9 gi\u1ea3ng d\u1ea1y", "label": "th\u00f4ng b\u00e1o", "to": "\u0111\u1ec1 c\u01b0\u01a1ng chi ti\u1ebft h\u1ecdc ph\u1ea7n"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "repulsion": {
+            "centralGravity": 0.2,
+            "damping": 0.09,
+            "nodeDistance": 200,
+            "springConstant": 0.05,
+            "springLength": 200
+        },
+        "solver": "repulsion",
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+                      network.on("stabilizationProgress", function(params) {
+                          document.getElementById('loadingBar').removeAttribute("style");
+                          var maxWidth = 496;
+                          var minWidth = 20;
+                          var widthFactor = params.iterations/params.total;
+                          var width = Math.max(minWidth,maxWidth * widthFactor);
+                          document.getElementById('bar').style.width = width + 'px';
+                          document.getElementById('text').innerHTML = Math.round(widthFactor*100) + '%';
+                      });
+                      network.once("stabilizationIterationsDone", function() {
+                          document.getElementById('text').innerHTML = '100%';
+                          document.getElementById('bar').style.width = '496px';
+                          document.getElementById('loadingBar').style.opacity = 0;
+                          // really clean the dom element
+                          setTimeout(function () {document.getElementById('loadingBar').style.display = 'none';}, 500);
+                      });
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

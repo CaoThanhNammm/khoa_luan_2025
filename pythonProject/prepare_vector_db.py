@@ -1,27 +1,9 @@
-from langchain.text_splitter import RecursiveCharacterTextSplitter, CharacterTextSplitter, NLTKTextSplitter, SpacyTextSplitter
-from langchain_community.document_loaders import DirectoryLoader, PyMuPDFLoader
 import os
 from qdrant_client import models
 from dotenv import load_dotenv
 from qdrant_client.models import PointStruct
 load_dotenv()
 import general
-
-# đọc từng đoạn một của tất cả pdf
-def read_chunks(data_path, chunk_size = 700, chunk_overlap = 140):
-    # Khai báo loader để quét toàn bộ thư mục data
-    loader = DirectoryLoader(data_path, glob="*.pdf", use_multithreading=True, loader_cls=PyMuPDFLoader)
-    documents = loader.load()
-
-    # Chỉ lấy từ trang 4 trở đi vì trang đầu thường là bìa sách và mục lục
-    documents = documents[4:len(documents)-2]
-
-    # Sử dụng TextSplitter để chia nhỏ văn bản
-    text_splitter = SpacyTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
-    chunks = text_splitter.split_documents(documents)
-
-    print("Read chunk success")
-    return chunks
 
 # tạo embedding với len(embedding) = 768
 def create_embedding(chunks, collection_name, pho_bert_large, pho_bert_base_v2, model_512, tokenizer1, tokenizer2, model_splade_doc, tokenizer_splade_doc, model_late_interaction, tokenizer_late_interaction, client):
@@ -107,7 +89,7 @@ client = general.load_db(url)
 collection = general.create_collection(client, collection_name, size, distance)
 
 # 6. lấy ra chunks trong tất cả các doc
-chunks = read_chunks(data_path)
+chunks = general.read_chunks(data_path)
 
 # 7. tạo embedding
 create_embedding(chunks, collection_name, model_1024, model_768, model_512, tokenizer1, tokenizer2, model_doc, tokenizer_doc, model_late_interaction, tokenizer_late_interaction, client)

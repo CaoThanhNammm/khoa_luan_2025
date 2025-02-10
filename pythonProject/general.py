@@ -1,3 +1,4 @@
+from neo4j import GraphDatabase
 from sentence_transformers import SentenceTransformer
 from transformers import AutoModel
 from qdrant_client import QdrantClient, models
@@ -6,8 +7,49 @@ from transformers import AutoModelForMaskedLM, AutoTokenizer
 import py_vncorenlp
 from dotenv import load_dotenv
 load_dotenv()
-
+import google.generativeai as genai
+from qdrant_client import models
+import os
 import re
+from langchain.text_splitter import RecursiveCharacterTextSplitter, CharacterTextSplitter, NLTKTextSplitter, SpacyTextSplitter
+from langchain_community.document_loaders import DirectoryLoader, PyMuPDFLoader, PyPDFLoader, UnstructuredPDFLoader, PyPDFium2Loader, PDFMinerLoader
+
+def load_model(model, system_instruction):
+    genai.configure(api_key=os.getenv("API_KEY"))
+    model = genai.GenerativeModel(
+        model_name=model,
+        system_instruction=system_instruction)
+
+    print("load model success")
+    return model
+
+# đọc từng đoạn một của tất cả pdf
+def read_chunks(data_path, chunk_size = 700, chunk_overlap = 140):
+    # Khai báo loader để quét toàn bộ thư mục data
+    loader = DirectoryLoader(data_path, glob="*.pdf", use_multithreading=True, loader_cls=PyMuPDFLoader)
+    documents = loader.load()
+
+    # Chỉ lấy từ trang 4 trở đi vì trang đầu thường là bìa sách và mục lục
+    # documents = documents[4:len(documents)-2]
+
+    # Sử dụng TextSplitter để chia nhỏ văn bản
+    text_splitter = SpacyTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
+    chunks = text_splitter.split_documents(documents)
+
+    print("Read chunk success")
+    return chunks
+
+def connect_to_graph_db():
+    try:
+        # Kết nối đến Neo4j
+        uri = "bolt://localhost:7687"  # Địa chỉ Neo4j
+        username = "neo4j"  # Tên đăng nhập
+        password = "123456789"  # Mật khẩu
+        driver = GraphDatabase.driver(uri, auth=(username, password))
+        print("connect to graph db success")
+        return driver
+    except:
+        print("connect to graph db failed")
 
 def load_vncorenlp():
     return py_vncorenlp.VnCoreNLP(annotators=["wseg"], save_dir=r'C:\Users\Nam\Desktop\vncorenlp')

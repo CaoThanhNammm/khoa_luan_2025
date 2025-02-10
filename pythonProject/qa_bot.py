@@ -12,11 +12,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-def load_model(model):
-    genai.configure(api_key=os.getenv("API_KEY"))
-    model = genai.GenerativeModel(model)
-    print("load model success")
-    return model
 
 def query_from_db(client, collection_name, text_embedded_1024, text_embedded_768, text_embedded_512, embedded_late_interaction):
     return client.query_points(
@@ -85,7 +80,7 @@ model_late_interaction_name = os.getenv("model_late_interaction")
 url = os.getenv("url")
 
 # 1. tải model
-model = load_model(model_name)
+model = general.load_model(model_name, "")
 
 # 2. tải model_embedding
 model_1024, tokenizer1 = general.load_model_embedding(model_embedding_1024_name)
